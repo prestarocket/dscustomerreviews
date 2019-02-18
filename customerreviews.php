@@ -263,10 +263,16 @@ class Customerreviews extends Module
 
     protected function deleteComment($commentid)
     {
+        $sql = 'DELETE * FROM '._DB_PREFIX_.'customerreviews WHERE id_comment = '.$commentid;
+        $sql = Db::getInstance()->execute($sql);
     }
 
     protected function getAllComments()
     {
+        $sql = 'SELECT * FROM '._DB_PREFIX_.'customerreviews';
+        $sql = Db::getInstance()->ExecuteS($sql);
+
+        return $sql;
     }
 
     protected function getSliderComments()
