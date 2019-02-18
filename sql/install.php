@@ -35,3 +35,4 @@ foreach ($sql as $query) {
         return false;
     }
 }
+//dupa
