@@ -257,11 +257,11 @@ class Customerreviews extends Module
         );
     }
 
-    protected function approveComments()
+    protected function approveComment($commentid)
     {
     }
 
-    protected function deleteComment()
+    protected function deleteComment($commentid)
     {
     }
 
@@ -273,11 +273,11 @@ class Customerreviews extends Module
     {
     }
 
-    protected function getProductComments()
+    protected function getProductComments($productid)
     {
     }
 
-    protected function addProductComment()
+    protected function addProductComment($userid, $productid)
     {
     }
 
@@ -327,6 +327,10 @@ class Customerreviews extends Module
 
     public function hookDisplayProductTab()
     {
+        $userid = $this->context->customer->id;
+        $productid = Tools::getvalue('id_product');
+        $this->addProductComment($userid, $productid);
+
         /* Place your code here. */
     }
 
