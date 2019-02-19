@@ -89,7 +89,7 @@ class Customerreviews extends Module
         }
         $tab = new Tab();
         $tab->active = 1;
-        $tab->class_name = 'AdministratorFacebookChat';
+        $tab->class_name = 'AdministratorCustomerReviews';
         $tab->name = array();
         foreach (Language::getLanguages() as $lang) {
             $tab->name[$lang['id_lang']] = 'Customer reviews';
@@ -103,7 +103,7 @@ class Customerreviews extends Module
 
     private function tabRem()
     {
-        $id_tab = Tab::getIdFromClassName('AdministratorFacebookChat');
+        $id_tab = Tab::getIdFromClassName('AdministratorCustomerReviews');
         if ($id_tab) {
             $tab = new Tab($id_tab);
             $tab->delete();
