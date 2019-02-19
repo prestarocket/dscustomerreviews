@@ -28,15 +28,15 @@
 	<table class='table'>
 		<thead class='thead-default'>
 			<tr class="column-headers">
-				<th>#</th>
-				<th>{l s='Customer' name mod='customerreviews'}</th>
-				<th>{l s='Stars' mod='customerreviews'}</th>
-				<th>{l s='Reviews' mod='customerreviews'}</th>
-				<th>{l s='Product' name mod='customerreviews'}</th>
-				<td>{l s='Date Add' mod='customerreviews'}</th>
-				<th>{l s='Aprroved' mod='customerreviews'}</th>
-				<th>{l s='Slider' mod='customerreviews'}</th>
-				<th>{l s='Actions' mod='customerreviews'}</th>
+				<th scope="col">#</th>
+				<th scope="col">{l s='Customer name' mod='customerreviews'}</th>
+				<th scope="col">{l s='Stars' mod='customerreviews'}</th>
+				<th scope="col">{l s='Reviews' mod='customerreviews'}</th>
+				<th scope="col">{l s='Product  name' mod='customerreviews'}</th>
+				<th scope="col">{l s='Date Add' mod='customerreviews'}</th>
+				<th scope="col">{l s='Aprroved' mod='customerreviews'}</th>
+				<th scope="col">{l s='Slider' mod='customerreviews'}</th>
+				<th scope="col">{l s='Actions' mod='customerreviews'}</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -67,7 +67,7 @@
 	<table class='table'>
 		<thead class='thead-default'>
 			<tr class="column-headers">
-				<th scope="col">{l s='Customer' name mod='customerreviews'}</th>
+				<th scope="col">{l s='Customer name' mod='customerreviews'}</th>
 				<th scope="col">{l s='Stars' mod='customerreviews'}</th>
 				<th scope="col">{l s='Reviews' mod='customerreviews'}</th>
 				<th scope="col">{l s='Position' mod='customerreviews'}</th>
