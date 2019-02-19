@@ -134,7 +134,9 @@ class Customerreviews extends Module
      */
     public function install()
     {
-        Configuration::updateValue('CUSTOMERREVIEWS_LIVE_MODE', false);
+        Configuration::updateValue('CUSTOMERREVIEWS_HOMESLIDER', false);
+        Configuration::updateValue('CUSTOMERREVIEWS_TIMEAFTER', 3);
+        Configuration::updateValue('CUSTOMERREVIEWS_MUSTAPROVED', true);
 
         $this->createTab();
 
@@ -149,7 +151,9 @@ class Customerreviews extends Module
 
     public function uninstall()
     {
-        Configuration::deleteByName('CUSTOMERREVIEWS_LIVE_MODE');
+        Configuration::deleteByName('CUSTOMERREVIEWS_HOMESLIDER');
+        Configuration::deleteByName('CUSTOMERREVIEWS_TIMEAFTER');
+        Configuration::deleteByName('CUSTOMERREVIEWS_MUSTAPROVED');
 
         $this->tabRem();
 
@@ -219,10 +223,10 @@ class Customerreviews extends Module
                 'input' => array(
                     array(
                         'type' => 'switch',
-                        'label' => $this->l('Live mode'),
-                        'name' => 'CUSTOMERREVIEWS_LIVE_MODE',
+                        'label' => $this->l('Home slider'),
+                        'name' => 'CUSTOMERREVIEWS_HOMESLIDER',
                         'is_bool' => true,
-                        'desc' => $this->l('Use this module in live mode'),
+                        'desc' => $this->l('Show carousel with customer reviews on home page'),
                         'values' => array(
                             array(
                                 'id' => 'active_on',
@@ -237,17 +241,31 @@ class Customerreviews extends Module
                         ),
                     ),
                     array(
-                        'col' => 3,
-                        'type' => 'text',
-                        'prefix' => '<i class="icon icon-envelope"></i>',
-                        'desc' => $this->l('Enter a valid email address'),
-                        'name' => 'CUSTOMERREVIEWS_ACCOUNT_EMAIL',
-                        'label' => $this->l('Email'),
+                        'type' => 'switch',
+                        'label' => $this->l('Comment aproved'),
+                        'name' => 'CUSTOMERREVIEWS_MUSTAPROVED',
+                        'is_bool' => true,
+                        'desc' => $this->l('Do the comments must be approved?'),
+                        'values' => array(
+                            array(
+                                'id' => 'active_on',
+                                'value' => true,
+                                'label' => $this->l('Yes'),
+                            ),
+                            array(
+                                'id' => 'active_off',
+                                'value' => false,
+                                'label' => $this->l('No'),
+                            ),
+                        ),
                     ),
                     array(
-                        'type' => 'password',
-                        'name' => 'CUSTOMERREVIEWS_ACCOUNT_PASSWORD',
-                        'label' => $this->l('Password'),
+                        'col' => 3,
+                        'type' => 'number',
+                        'prefix' => '<i class="icon icon-envelope"></i>',
+                        'desc' => $this->l('How long after the purchase can the customer add a comment?'),
+                        'name' => 'CUSTOMERREVIEWS_TIMEAFTER',
+                        'label' => $this->l('Time after buy'),
                     ),
                 ),
                 'submit' => array(
