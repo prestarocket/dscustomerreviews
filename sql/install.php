@@ -27,12 +27,12 @@ $sql = array();
 
 $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'customerreviews` (
     `id_customerreviews` int(11) NOT NULL AUTO_INCREMENT,
-    `id_orderdetail` int(11) NOT NULL,
+    `id_order_detail` int(11) NOT NULL,
     `timetowrite` datetime NOT NULL,
-    `timeadded` datetime NOT NULL,
-    `stars` tinyint(1) NOT NULL,
+    `timeadded` datetime NULL,
+    `stars` tinyint(1) NULL,
     `title` varchar(64) NULL,
-    `content` text NOT NULL,
+    `content` text  NULL,
     `visible` tinyint(1) NOT NULL,
     `visibleweight` int(5) NOT NULL,
     `deleted` tinyint(1) NOT NULL,

@@ -287,7 +287,17 @@ class Customerreviews extends Module
 
     protected function getAllComments()
     {
-        $sql = 'SELECT * FROM '._DB_PREFIX_.'customerreviews';
+        $sql = 'SELECT * FROM '._DB_PREFIX_.'customerreviews AS cr
+        LEFT JOIN '._DB_PREFIX_.'order_detail AS od
+        ON cr.id_orderdetail = od.id_order_detail
+        LEFT JOIN '._DB_PREFIX_.'orders AS ord
+        ON od.id_order = ord.id_order
+        LEFT JOIN '._DB_PREFIX_.'product AS pr
+        ON pr.id_product = od.product_id
+        LEFT JOIN '._DB_PREFIX_.'customer AS cus
+        ON cus.id_customer = ord.id_customer
+        ';
+
         $sql = Db::getInstance()->ExecuteS($sql);
 
         return $sql;
@@ -295,14 +305,74 @@ class Customerreviews extends Module
 
     protected function getSliderComments()
     {
+        $sql = 'SELECT cr.stars, cr.content, cr.timeadded, cus.firstname, cus.lastname, pr.id_product, pr.product_name
+         FROM '._DB_PREFIX_.'customerreviews AS cr
+        LEFT JOIN '._DB_PREFIX_.'order_detail AS od
+        ON cr.id_orderdetail = od.id_order_detail
+        LEFT JOIN '._DB_PREFIX_.'orders AS ord
+        ON od.id_order = ord.id_order
+        LEFT JOIN '._DB_PREFIX_.'product AS pr
+        ON pr.id_product = od.product_id
+        LEFT JOIN '._DB_PREFIX_.'customer AS cus
+        ON cus.id_customer = ord.id_customer
+        WHERE cr.slider = 1
+        ORDER BY cr.sliderweight
+        ';
+        $sql = Db::getInstance()->ExecuteS($sql);
+
+        return $sql;
     }
 
     protected function getProductComments($productid)
     {
+        $sql = 'SELECT cr.stars, cr.content, cr.timeadded, cus.firstname, cus.lastname, pr.product_name
+        FROM '._DB_PREFIX_.'customerreviews AS cr
+        LEFT JOIN '._DB_PREFIX_.'order_detail AS od
+        ON cr.id_orderdetail = od.id_order_detail
+        LEFT JOIN '._DB_PREFIX_.'orders AS ord
+        ON od.id_order = ord.id_order
+        LEFT JOIN '._DB_PREFIX_.'product AS pr
+        ON pr.id_product = od.product_id
+        LEFT JOIN '._DB_PREFIX_.'customer AS cus
+        ON cus.id_customer = ord.id_customer
+        WHERE  pr.id_product = '.$productid.' AND cr.visible = 1
+        ';
+
+        $sql = Db::getInstance()->ExecuteS($sql);
+
+        return $sql;
+
     }
 
-    protected function addProductComment($userid, $productid)
+    protected function addProductComment($orderdetail)
     {
+        $sql = '
+        INSERT INTO '._DB_PREFIX_.'customerreviews 
+        (
+        `id_order_detail`,
+        `timetowrite`,
+        `visible`,
+        `visibleweight`,
+        `deleted`,
+        `slider`,
+        `sliderweight`
+        )
+        VALUES
+        (
+        '.$orderdetail.',
+        '.$timetowrite.',
+        0,
+        0,
+        0,
+        0,
+        0
+        )
+        ';
+
+        $sql = Db::getInstance()->ExecuteS($sql);
+
+        return $sql;
+
     }
 
     /**
