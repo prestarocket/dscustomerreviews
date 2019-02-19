@@ -29,7 +29,7 @@
 		<thead class='thead-default'>
 			<tr class="column-headers">
 				<th>#</th>
-				<th>{l s='Customer' name mod='customerreviews'}</th>
+				<th>{l s='Customer name' mod='customerreviews'}</th>
 				<th>{l s='Stars' mod='customerreviews'}</th>
 				<th>{l s='Reviews' mod='customerreviews'}</th>
 				<th>{l s='Product' name mod='customerreviews'}</th>
