@@ -293,9 +293,9 @@ class Customerreviews extends Module
     protected function getConfigFormValues()
     {
         return array(
-            'CUSTOMERREVIEWS_LIVE_MODE' => Configuration::get('CUSTOMERREVIEWS_LIVE_MODE', true),
-            'CUSTOMERREVIEWS_ACCOUNT_EMAIL' => Configuration::get('CUSTOMERREVIEWS_ACCOUNT_EMAIL', 'contact@prestashop.com'),
-            'CUSTOMERREVIEWS_ACCOUNT_PASSWORD' => Configuration::get('CUSTOMERREVIEWS_ACCOUNT_PASSWORD', null),
+            'CUSTOMERREVIEWS_HOMESLIDER' => Configuration::get('CUSTOMERREVIEWS_HOMESLIDER', false),
+            'CUSTOMERREVIEWS_TIMEAFTER' => Configuration::get('CUSTOMERREVIEWS_TIMEAFTER', null),
+            'CUSTOMERREVIEWS_MUSTAPROVED' => Configuration::get('CUSTOMERREVIEWS_MUSTAPROVED', false),
         );
     }
 
@@ -327,8 +327,13 @@ class Customerreviews extends Module
      */
     public function hookHeader()
     {
-        $this->context->controller->addJS($this->_path.'/views/js/front.js');
-        $this->context->controller->addCSS($this->_path.'/views/css/front.css');
+        if (Tools::getValue('controller') == 'index') {
+            $this->context->controller->addJS($this->_path.'/views/js/slider.js');
+            $this->context->controller->addCSS($this->_path.'/views/css/slider.css');
+        } elseif (Tools::getValue('controller') == 'product') {
+            $this->context->controller->addJS($this->_path.'/views/js/product.js');
+            $this->context->controller->addCSS($this->_path.'/views/css/product.css');
+        }
     }
 
     public function hookDisplayProductTab()
@@ -342,5 +347,14 @@ class Customerreviews extends Module
 
     public function hookDisplayHome()
     {
+        $comments = $this->getSliderComments();
+        $slider = Configuration::get('CUSTOMERREVIEWS_HOMESLIDER');
+
+        if ($slider == true) {
+            $this->context->smarty->assign('slidercomments', $comments);
+            $output = $this->display(__FILE__, 'views/templates/hook/hookDisplayHome.tpl');
+
+            return $output;
+        }
     }
 }
