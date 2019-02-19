@@ -145,11 +145,7 @@ class Customerreviews extends Module
         return parent::install() &&
             $this->registerHook('header') &&
             $this->registerHook('backOfficeHeader') &&
-<<<<<<< HEAD
             $this->registerHook('displayProductExtraContent') &&
-=======
-            $this->registerHook('displayProductTab') &&
->>>>>>> 1ea49c3b64388f9d09a080cb5c9beee4ad1998f7
             $this->registerHook('displayHome');
     }
 
@@ -352,7 +348,6 @@ class Customerreviews extends Module
         $sql = Db::getInstance()->ExecuteS($sql);
 
         return $sql;
-
     }
 
     protected function ifProductCommentsIsNeeded($productid)
@@ -375,7 +370,6 @@ class Customerreviews extends Module
         $sql = Db::getInstance()->ExecuteS($sql);
 
         return $sql;
-
     }
 
     protected function insertProductComment($id_order_detail)
@@ -417,16 +411,9 @@ class Customerreviews extends Module
         `currentdata` = 0';
     }
 
-
-
     protected function addProductComment($orderdetail)
     {
         $currentlang = $this->context->language->id;
-<<<<<<< HEAD
-
-=======
-        
->>>>>>> 1ea49c3b64388f9d09a080cb5c9beee4ad1998f7
         $sql = '
         INSERT INTO '._DB_PREFIX_.'customerreviews 
         (
@@ -457,7 +444,6 @@ class Customerreviews extends Module
         $sql = Db::getInstance()->ExecuteS($sql);
 
         return $sql;
-
     }
 
     /**
@@ -511,7 +497,6 @@ class Customerreviews extends Module
 
     public function hookdisplayProductExtraContent($params)
     {
-<<<<<<< HEAD
         $title = $this->l('Opinie o produkcie');
         $productid = (int) Tools::getValue('id_product');
         $reviews = $this->getProductComments($productid);
@@ -526,13 +511,6 @@ class Customerreviews extends Module
             ->setContent($content);
 
         return $array;
-=======
-        $userid = $this->context->customer->id;
-        $productid = Tools::getvalue('id_product');
-        $this->addProductComment($userid, $productid);
-
-        /* Place your code here. */
->>>>>>> 1ea49c3b64388f9d09a080cb5c9beee4ad1998f7
     }
 
     public function hookDisplayHome()
