@@ -26,8 +26,8 @@
 <div class="panel">
 	<h3><i class="icon icon-credit-card"></i> {l s='Customer Reviews' mod='customerreviews'}</h3>
 	<table class='table'>
-		<thead>
-			<tr>
+		<thead class='thead-default'>
+			<tr class="column-headers">
 				<th>#</th>
 				<th>{l s='Customer' name mod='customerreviews'}</th>
 				<th>{l s='Stars' mod='customerreviews'}</th>
@@ -49,7 +49,13 @@
 					<td>{$comment.date}</td>
 					<td>{$comment.approved}</td>
 					<td>{$comment.slider}</td>
-					<td></td>
+					<td>
+						<div class='btn-group-action'>
+							<div class='btn-group'>
+								
+							</div>
+						</div>
+					</td>
 				</tr>
 			{/foreach}
 		<tbody>
@@ -58,5 +64,24 @@
 
 <div class="panel">
 	<h3><i class="icon icon-tags"></i> {l s='Slider order' mod='customerreviews'}</h3>
-
+	<table class='table'>
+		<thead class='thead-default'>
+			<tr class="column-headers">
+				<th scope="col">{l s='Customer' name mod='customerreviews'}</th>
+				<th scope="col">{l s='Stars' mod='customerreviews'}</th>
+				<th scope="col">{l s='Reviews' mod='customerreviews'}</th>
+				<th scope="col">{l s='Position' mod='customerreviews'}</th>
+			</tr>
+		</thead>
+		<tbody>
+			{foreach $slider as $item}
+				<tr id='{$item.id}'>
+					<th>{$item.customer}</th>
+					<td>{$item.stars}</td>
+					<td>{$item.comment}</td>
+					<td>{$item.position}</td>
+				</tr>
+			{/foreach}
+		</tbody>
+	</table>
 </div>
