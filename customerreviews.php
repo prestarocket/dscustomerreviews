@@ -428,6 +428,12 @@ class Customerreviews extends Module
         $userid = $this->context->customer->id;
         $productid = Tools::getvalue('id_product');
         $this->addProductComment($userid, $productid);
+        $comments->getProductComments($productid);
+        $this->context->smarty->assign('comments', $comments);
+
+        $output = $this->display(__FILE__, 'views/templates/hook/hookDisplayProuctTab.tpl');
+
+        return $output;
 
         /* Place your code here. */
     }
