@@ -146,7 +146,8 @@ class Customerreviews extends Module
             $this->registerHook('header') &&
             $this->registerHook('backOfficeHeader') &&
             $this->registerHook('displayProductTab') &&
-            $this->registerHook('displayHome');
+            $this->registerHook('displayHome') &&
+            $this->registerHook('displayCustomerAccount');
     }
 
     public function uninstall()
@@ -341,7 +342,6 @@ class Customerreviews extends Module
         $sql = Db::getInstance()->ExecuteS($sql);
 
         return $sql;
-
     }
 
     protected function addProductComment($orderdetail)
@@ -372,7 +372,6 @@ class Customerreviews extends Module
         $sql = Db::getInstance()->ExecuteS($sql);
 
         return $sql;
-
     }
 
     /**
@@ -444,5 +443,9 @@ class Customerreviews extends Module
 
             return $output;
         }
+    }
+
+    public function hookDisplayCustomerAccount()
+    {
     }
 }
