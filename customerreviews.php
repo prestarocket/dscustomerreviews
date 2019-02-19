@@ -147,7 +147,10 @@ class Customerreviews extends Module
             $this->registerHook('backOfficeHeader') &&
             $this->registerHook('displayProductTab') &&
             $this->registerHook('displayHome') &&
-            $this->registerHook('displayCustomerAccount');
+            $this->registerHook('displayCustomerAccount') &&
+            $this->registerHook('registerGDPRConsent') &&
+            $this->registerHook('actionDeleteGDPRCustomer') &&
+            $this->registerHook('actionExportGDPRData');
     }
 
     public function uninstall()
