@@ -146,7 +146,11 @@ class Customerreviews extends Module
             $this->registerHook('header') &&
             $this->registerHook('backOfficeHeader') &&
             $this->registerHook('displayProductTab') &&
-            $this->registerHook('displayHome');
+            $this->registerHook('displayHome') &&
+            $this->registerHook('displayCustomerAccount') &&
+            $this->registerHook('registerGDPRConsent') &&
+            $this->registerHook('actionDeleteGDPRCustomer') &&
+            $this->registerHook('actionExportGDPRData');
     }
 
     public function uninstall()
@@ -342,63 +346,63 @@ class Customerreviews extends Module
 
         return $sql;
     }
-
+    
     protected function ifProductCommentsIsNeeded($productid)
-    {
-        $sql = 'SELECT cr.stars, cr.content, cr.timeadded, cus.firstname, cus.lastname, pr.product_name, od.id_order_detail
-        FROM '._DB_PREFIX_.'customerreviews AS cr
-        LEFT JOIN '._DB_PREFIX_.'order_detail AS od
-        ON cr.id_orderdetail = od.id_order_detail
-        LEFT JOIN '._DB_PREFIX_.'orders AS ord
-        ON od.id_order = ord.id_order
-        LEFT JOIN '._DB_PREFIX_.'product AS pr
-        ON pr.id_product = od.product_id
-        LEFT JOIN '._DB_PREFIX_.'customer AS cus
-        ON cus.id_customer = ord.id_customer
-        WHERE  pr.id_product = '.$productid.' AND cr.currentdata = 1
-        ';
-
-        $sql = Db::getInstance()->ExecuteS($sql);
-
-        return $sql;
-    }
-
-    protected function insertProductComment($id_order_detail)
-    {
-        $sql = 'UPDATE '._DB_PREFIX_.'customerreviews
-        SET 
-        `timeadded` = now(),
-        `stars` = '.$stars.',
-        `title` = '.$title.',
-        `content` = '.$content.',
-        `currentdata` = 0
-        WHERE 
-        `id_order_detail` = '.$id_order_detail;
-
-        $sql = 'UPDATE '._DB_PREFIX_.'customerreviews AS cr
-        LEFT JOIN '._DB_PREFIX_.'order_detail AS od
-        ON cr.id_orderdetail = od.id_order_detail
-        LEFT JOIN '._DB_PREFIX_.'orders AS ord
-        ON od.id_order = ord.id_order
-        WHERE  
-        pr.id_product = 
-        (
-        SELECT DISTINCT pr.id_product 
-        FROM '._DB_PREFIX_.'customerreviews AS cr
-        LEFT JOIN '._DB_PREFIX_.'order_detail AS od
-        ON cr.id_orderdetail = od.id_order_detail
-        LEFT JOIN '._DB_PREFIX_.'orders AS ord
-        ON od.id_order = ord.id_order
-        LEFT JOIN '._DB_PREFIX_.'product AS pr
-        ON pr.id_product = od.product_id
-        LEFT JOIN '._DB_PREFIX_.'customer AS cus
-        ON cus.id_customer = ord.id_customer
-        WHERE  `id_order_detail` = '.$id_order_detail.'
-        )
-        AND ord.id_customer = '.$currentcustomer.'
-        SET 
-        `currentdata` = 0';
-    }
+-    {
+-        $sql = 'SELECT cr.stars, cr.content, cr.timeadded, cus.firstname, cus.lastname, pr.product_name, od.id_order_detail
+-        FROM '._DB_PREFIX_.'customerreviews AS cr
+-        LEFT JOIN '._DB_PREFIX_.'order_detail AS od
+-        ON cr.id_orderdetail = od.id_order_detail
+-        LEFT JOIN '._DB_PREFIX_.'orders AS ord
+-        ON od.id_order = ord.id_order
+-        LEFT JOIN '._DB_PREFIX_.'product AS pr
+-        ON pr.id_product = od.product_id
+-        LEFT JOIN '._DB_PREFIX_.'customer AS cus
+-        ON cus.id_customer = ord.id_customer
+-        WHERE  pr.id_product = '.$productid.' AND cr.currentdata = 1
+-        ';
+-
+-        $sql = Db::getInstance()->ExecuteS($sql);
+-
+-        return $sql;
+-    }
+-
+-    protected function insertProductComment($id_order_detail)
+-    {
+-        $sql = 'UPDATE '._DB_PREFIX_.'customerreviews
+-        SET 
+-        `timeadded` = now(),
+-        `stars` = '.$stars.',
+-        `title` = '.$title.',
+-        `content` = '.$content.',
+-        `currentdata` = 0
+-        WHERE 
+-        `id_order_detail` = '.$id_order_detail;
+-
+-        $sql = 'UPDATE '._DB_PREFIX_.'customerreviews AS cr
+-        LEFT JOIN '._DB_PREFIX_.'order_detail AS od
+-        ON cr.id_orderdetail = od.id_order_detail
+-        LEFT JOIN '._DB_PREFIX_.'orders AS ord
+-        ON od.id_order = ord.id_order
+-        WHERE  
+-        pr.id_product = 
+-        (
+-        SELECT DISTINCT pr.id_product 
+-        FROM '._DB_PREFIX_.'customerreviews AS cr
+-        LEFT JOIN '._DB_PREFIX_.'order_detail AS od
+-        ON cr.id_orderdetail = od.id_order_detail
+-        LEFT JOIN '._DB_PREFIX_.'orders AS ord
+-        ON od.id_order = ord.id_order
+-        LEFT JOIN '._DB_PREFIX_.'product AS pr
+-        ON pr.id_product = od.product_id
+-        LEFT JOIN '._DB_PREFIX_.'customer AS cus
+-        ON cus.id_customer = ord.id_customer
+-        WHERE  `id_order_detail` = '.$id_order_detail.'
+-        )
+-        AND ord.id_customer = '.$currentcustomer.'
+-        SET 
+-        `currentdata` = 0';
+-    }
 
     protected function addProductComment($orderdetail)
     {
@@ -486,6 +490,12 @@ class Customerreviews extends Module
         $userid = $this->context->customer->id;
         $productid = Tools::getvalue('id_product');
         $this->addProductComment($userid, $productid);
+        $comments->getProductComments($productid);
+        $this->context->smarty->assign('comments', $comments);
+
+        $output = $this->display(__FILE__, 'views/templates/hook/hookDisplayProuctTab.tpl');
+
+        return $output;
 
         /* Place your code here. */
     }
@@ -501,5 +511,9 @@ class Customerreviews extends Module
 
             return $output;
         }
+    }
+
+    public function hookDisplayCustomerAccount()
+    {
     }
 }

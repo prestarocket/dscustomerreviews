@@ -25,24 +25,63 @@
 
 <div class="panel">
 	<h3><i class="icon icon-credit-card"></i> {l s='Customer Reviews' mod='customerreviews'}</h3>
-	<p>
-		<strong>{l s='Here is my new generic module!' mod='customerreviews'}</strong><br />
-		{l s='Thanks to PrestaShop, now I have a great module.' mod='customerreviews'}<br />
-		{l s='I can configure it using the following configuration form.' mod='customerreviews'}
-	</p>
-	<br />
-	<p>
-		{l s='This module will boost your sales!' mod='customerreviews'}
-	</p>
+	<table class='table'>
+		<thead class='thead-default'>
+			<tr class="column-headers">
+				<th>#</th>
+				<th>{l s='Customer' name mod='customerreviews'}</th>
+				<th>{l s='Stars' mod='customerreviews'}</th>
+				<th>{l s='Reviews' mod='customerreviews'}</th>
+				<th>{l s='Product' name mod='customerreviews'}</th>
+				<td>{l s='Date Add' mod='customerreviews'}</th>
+				<th>{l s='Aprroved' mod='customerreviews'}</th>
+				<th>{l s='Slider' mod='customerreviews'}</th>
+				<th>{l s='Actions' mod='customerreviews'}</th>
+			</tr>
+		</thead>
+		<tbody>
+			{foreach $comments as $comment}
+				<tr>
+					<th>{$comment.customer}</th>
+					<td>{$comment.stars}</td>
+					<td>{$comment.comment}</td>
+					<td></td>
+					<td>{$comment.date}</td>
+					<td>{$comment.approved}</td>
+					<td>{$comment.slider}</td>
+					<td>
+						<div class='btn-group-action'>
+							<div class='btn-group'>
+								
+							</div>
+						</div>
+					</td>
+				</tr>
+			{/foreach}
+		<tbody>
+	</table>
 </div>
 
 <div class="panel">
-	<h3><i class="icon icon-tags"></i> {l s='Documentation' mod='customerreviews'}</h3>
-	<p>
-		&raquo; {l s='You can get a PDF documentation to configure this module' mod='customerreviews'} :
-		<ul>
-			<li><a href="#" target="_blank">{l s='English' mod='customerreviews'}</a></li>
-			<li><a href="#" target="_blank">{l s='French' mod='customerreviews'}</a></li>
-		</ul>
-	</p>
+	<h3><i class="icon icon-tags"></i> {l s='Slider order' mod='customerreviews'}</h3>
+	<table class='table'>
+		<thead class='thead-default'>
+			<tr class="column-headers">
+				<th scope="col">{l s='Customer' name mod='customerreviews'}</th>
+				<th scope="col">{l s='Stars' mod='customerreviews'}</th>
+				<th scope="col">{l s='Reviews' mod='customerreviews'}</th>
+				<th scope="col">{l s='Position' mod='customerreviews'}</th>
+			</tr>
+		</thead>
+		<tbody>
+			{foreach $slider as $item}
+				<tr id='{$item.id}'>
+					<th>{$item.customer}</th>
+					<td>{$item.stars}</td>
+					<td>{$item.comment}</td>
+					<td>{$item.position}</td>
+				</tr>
+			{/foreach}
+		</tbody>
+	</table>
 </div>
