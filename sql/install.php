@@ -38,6 +38,7 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'customerreviews` (
     `deleted` tinyint(1) NOT NULL,
     `slider` tinyint(1) NOT NULL,
     `sliderweight` int(5) NOT NULL,
+    `currentdata` int(1) NOT NULL,
     PRIMARY KEY  (`id_customerreviews`)
 ) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
 

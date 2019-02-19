@@ -358,7 +358,8 @@ class Customerreviews extends Module
         `visibleweight`,
         `deleted`,
         `slider`,
-        `sliderweight`
+        `sliderweight`,
+        `currentdata`
         )
         VALUES
         (
@@ -368,7 +369,8 @@ class Customerreviews extends Module
         0,
         0,
         0,
-        0
+        0,
+        1
         )
         ';
 
