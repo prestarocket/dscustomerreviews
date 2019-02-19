@@ -341,7 +341,6 @@ class Customerreviews extends Module
         $sql = Db::getInstance()->ExecuteS($sql);
 
         return $sql;
-
     }
 
     protected function ifProductCommentsIsNeeded($productid)
@@ -362,7 +361,6 @@ class Customerreviews extends Module
         $sql = Db::getInstance()->ExecuteS($sql);
 
         return $sql;
-
     }
 
     protected function insertProductComment($id_order_detail)
@@ -400,9 +398,7 @@ class Customerreviews extends Module
         AND ord.id_customer = '.$currentcustomer.'
         SET 
         `currentdata` = 0';
-    };
-
-
+    }
 
     protected function addProductComment($orderdetail)
     {
@@ -434,7 +430,6 @@ class Customerreviews extends Module
         $sql = Db::getInstance()->ExecuteS($sql);
 
         return $sql;
-
     }
 
     /**
