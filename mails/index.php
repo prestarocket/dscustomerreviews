@@ -23,29 +23,12 @@
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
 */
-$sql = array();
+header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 
-$sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'customerreviews` (
-    `id_customerreviews` int(11) NOT NULL AUTO_INCREMENT,
-    `id_order_detail` int(11) NOT NULL,
-    `timetowrite` datetime NOT NULL,
-    `timeadded` datetime NULL,
-    `stars` tinyint(1) NULL,
-    `title` varchar(64) NULL,
-    `content` text  NULL,
-    `visible` tinyint(1) NOT NULL,
-    `visibleweight` int(5) NOT NULL,
-    `deleted` tinyint(1) NOT NULL,
-    `slider` tinyint(1) NOT NULL,
-    `sliderweight` int(5) NOT NULL,
-    `currentdata` int(1) NOT NULL,
-    `reviewlang` int(10) NOT NULL,
-    PRIMARY KEY  (`id_customerreviews`)
-) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
+header('Cache-Control: no-store, no-cache, must-revalidate');
+header('Cache-Control: post-check=0, pre-check=0', false);
+header('Pragma: no-cache');
 
-foreach ($sql as $query) {
-    if (Db::getInstance()->execute($query) == false) {
-        return false;
-    }
-}
-//dupa
+header('Location: ../');
+exit;

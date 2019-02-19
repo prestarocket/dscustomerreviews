@@ -1,6 +1,6 @@
 <?php
 /**
-* 2007-2019 PrestaShop
+* 2007-2019 PrestaShop.
 *
 * NOTICE OF LICENSE
 *
@@ -23,29 +23,23 @@
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
 */
-$sql = array();
-
-$sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'customerreviews` (
-    `id_customerreviews` int(11) NOT NULL AUTO_INCREMENT,
-    `id_order_detail` int(11) NOT NULL,
-    `timetowrite` datetime NOT NULL,
-    `timeadded` datetime NULL,
-    `stars` tinyint(1) NULL,
-    `title` varchar(64) NULL,
-    `content` text  NULL,
-    `visible` tinyint(1) NOT NULL,
-    `visibleweight` int(5) NOT NULL,
-    `deleted` tinyint(1) NOT NULL,
-    `slider` tinyint(1) NOT NULL,
-    `sliderweight` int(5) NOT NULL,
-    `currentdata` int(1) NOT NULL,
-    `reviewlang` int(10) NOT NULL,
-    PRIMARY KEY  (`id_customerreviews`)
-) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
-
-foreach ($sql as $query) {
-    if (Db::getInstance()->execute($query) == false) {
-        return false;
+class CustomerReviewsModuleFrontController extends ModuleFrontController
+{
+    public function initContent()
+    {
+        parent::initContent();
+        Mail::Send(
+            (int) (Configuration::get('PS_LANG_DEFAULT')), // defaut language id
+            'contact', // email template file to be use
+            ' Module Installation', // email subject
+            array(
+                '{email}' => Configuration::get('PS_SHOP_EMAIL'), // sender email address
+                '{message}' => 'Hello world', // email content
+            ),
+            Configuration::get('PS_SHOP_EMAIL'), // receiver email address
+            null, //receiver name
+            null, //from email address
+            null  //from name
+        );
     }
 }
-//dupa
