@@ -89,7 +89,7 @@ class Customerreviews extends Module
         }
         $tab = new Tab();
         $tab->active = 1;
-        $tab->class_name = 'AdministratorCustomerReviews';
+        $tab->class_name = 'AdministratorFacebookChat';
         $tab->name = array();
         foreach (Language::getLanguages() as $lang) {
             $tab->name[$lang['id_lang']] = 'Customer reviews';
@@ -103,7 +103,7 @@ class Customerreviews extends Module
 
     private function tabRem()
     {
-        $id_tab = Tab::getIdFromClassName('AdministratorCustomerReviews');
+        $id_tab = Tab::getIdFromClassName('AdministratorFacebookChat');
         if ($id_tab) {
             $tab = new Tab($id_tab);
             $tab->delete();
@@ -146,11 +146,7 @@ class Customerreviews extends Module
             $this->registerHook('header') &&
             $this->registerHook('backOfficeHeader') &&
             $this->registerHook('displayProductTab') &&
-            $this->registerHook('displayHome') &&
-            $this->registerHook('displayCustomerAccount') &&
-            $this->registerHook('registerGDPRConsent') &&
-            $this->registerHook('actionDeleteGDPRCustomer') &&
-            $this->registerHook('actionExportGDPRData');
+            $this->registerHook('displayHome');
     }
 
     public function uninstall()
@@ -291,15 +287,18 @@ class Customerreviews extends Module
 
     protected function getAllComments()
     {
+        $currentlang = $this->context->language->id;
+
         $sql = 'SELECT * FROM '._DB_PREFIX_.'customerreviews AS cr
         LEFT JOIN '._DB_PREFIX_.'order_detail AS od
-        ON cr.id_orderdetail = od.id_order_detail
+        ON cr.id_order_detail = od.id_order_detail
         LEFT JOIN '._DB_PREFIX_.'orders AS ord
         ON od.id_order = ord.id_order
         LEFT JOIN '._DB_PREFIX_.'product AS pr
         ON pr.id_product = od.product_id
         LEFT JOIN '._DB_PREFIX_.'customer AS cus
         ON cus.id_customer = ord.id_customer
+        WHERE cr.reviewlang = '.$currentlang.'
         ';
 
         $sql = Db::getInstance()->ExecuteS($sql);
@@ -309,17 +308,19 @@ class Customerreviews extends Module
 
     protected function getSliderComments()
     {
-        $sql = 'SELECT cr.stars, cr.content, cr.timeadded, cus.firstname, cus.lastname, pr.id_product, pr.product_name
+        $currentlang = $this->context->language->id;
+
+        $sql = 'SELECT cr.stars, cr.content, cr.timeadded, cus.firstname, cus.lastname, pr.id_product, od.product_name
          FROM '._DB_PREFIX_.'customerreviews AS cr
         LEFT JOIN '._DB_PREFIX_.'order_detail AS od
-        ON cr.id_orderdetail = od.id_order_detail
+        ON cr.id_order_detail = od.id_order_detail
         LEFT JOIN '._DB_PREFIX_.'orders AS ord
         ON od.id_order = ord.id_order
         LEFT JOIN '._DB_PREFIX_.'product AS pr
         ON pr.id_product = od.product_id
         LEFT JOIN '._DB_PREFIX_.'customer AS cus
         ON cus.id_customer = ord.id_customer
-        WHERE cr.slider = 1
+        WHERE cr.slider = 1 AND cr.reviewlang = '.$currentlang.'
         ORDER BY cr.sliderweight
         ';
         $sql = Db::getInstance()->ExecuteS($sql);
@@ -329,46 +330,54 @@ class Customerreviews extends Module
 
     protected function getProductComments($productid)
     {
-        $sql = 'SELECT cr.stars, cr.content, cr.timeadded, cus.firstname, cus.lastname, pr.product_name
+        $currentlang = $this->context->language->id;
+
+        $sql = 'SELECT cr.stars, cr.content, cr.timeadded, cus.firstname, cus.lastname, od.product_name
         FROM '._DB_PREFIX_.'customerreviews AS cr
         LEFT JOIN '._DB_PREFIX_.'order_detail AS od
-        ON cr.id_orderdetail = od.id_order_detail
+        ON cr.id_order_detail = od.id_order_detail
         LEFT JOIN '._DB_PREFIX_.'orders AS ord
         ON od.id_order = ord.id_order
         LEFT JOIN '._DB_PREFIX_.'product AS pr
         ON pr.id_product = od.product_id
         LEFT JOIN '._DB_PREFIX_.'customer AS cus
         ON cus.id_customer = ord.id_customer
-        WHERE  pr.id_product = '.$productid.' AND cr.visible = 1
+        WHERE  pr.id_product = '.$productid.' AND cr.visible = 1 AND cr.reviewlang = '.$currentlang.'
         ';
 
         $sql = Db::getInstance()->ExecuteS($sql);
 
         return $sql;
+
     }
 
     protected function ifProductCommentsIsNeeded($productid)
     {
-        $sql = 'SELECT cr.stars, cr.content, cr.timeadded, cus.firstname, cus.lastname, pr.product_name, od.id_order_detail
+        $currentlang = $this->context->language->id;
+
+        $sql = 'SELECT cr.stars, cr.content, cr.timeadded, cus.firstname, cus.lastname, od.product_name, od.id_order_detail
         FROM '._DB_PREFIX_.'customerreviews AS cr
         LEFT JOIN '._DB_PREFIX_.'order_detail AS od
-        ON cr.id_orderdetail = od.id_order_detail
+        ON cr.id_order_detail = od.id_order_detail
         LEFT JOIN '._DB_PREFIX_.'orders AS ord
         ON od.id_order = ord.id_order
         LEFT JOIN '._DB_PREFIX_.'product AS pr
         ON pr.id_product = od.product_id
         LEFT JOIN '._DB_PREFIX_.'customer AS cus
         ON cus.id_customer = ord.id_customer
-        WHERE  pr.id_product = '.$productid.' AND cr.currentdata = 1
+        WHERE  pr.id_product = '.$productid.' AND cr.currentdata = 1 AND cr.reviewlang = '.$currentlang.'
         ';
 
         $sql = Db::getInstance()->ExecuteS($sql);
 
         return $sql;
+
     }
 
     protected function insertProductComment($id_order_detail)
     {
+        $currentlang = $this->context->language->id;
+
         $sql = 'UPDATE '._DB_PREFIX_.'customerreviews
         SET 
         `timeadded` = now(),
@@ -381,7 +390,7 @@ class Customerreviews extends Module
 
         $sql = 'UPDATE '._DB_PREFIX_.'customerreviews AS cr
         LEFT JOIN '._DB_PREFIX_.'order_detail AS od
-        ON cr.id_orderdetail = od.id_order_detail
+        ON cr.id_order_detail = od.id_order_detail
         LEFT JOIN '._DB_PREFIX_.'orders AS ord
         ON od.id_order = ord.id_order
         WHERE  
@@ -390,7 +399,7 @@ class Customerreviews extends Module
         SELECT DISTINCT pr.id_product 
         FROM '._DB_PREFIX_.'customerreviews AS cr
         LEFT JOIN '._DB_PREFIX_.'order_detail AS od
-        ON cr.id_orderdetail = od.id_order_detail
+        ON cr.id_order_detail = od.id_order_detail
         LEFT JOIN '._DB_PREFIX_.'orders AS ord
         ON od.id_order = ord.id_order
         LEFT JOIN '._DB_PREFIX_.'product AS pr
@@ -404,8 +413,12 @@ class Customerreviews extends Module
         `currentdata` = 0';
     }
 
+
+
     protected function addProductComment($orderdetail)
     {
+        $currentlang = $this->context->language->id;
+        
         $sql = '
         INSERT INTO '._DB_PREFIX_.'customerreviews 
         (
@@ -417,6 +430,7 @@ class Customerreviews extends Module
         `slider`,
         `sliderweight`,
         `currentdata`
+        `reviewlang`
         )
         VALUES
         (
@@ -427,13 +441,15 @@ class Customerreviews extends Module
         0,
         0,
         0,
-        1
+        1,
+        '.$currentlang.'
         )
         ';
 
         $sql = Db::getInstance()->ExecuteS($sql);
 
         return $sql;
+
     }
 
     /**
@@ -490,12 +506,6 @@ class Customerreviews extends Module
         $userid = $this->context->customer->id;
         $productid = Tools::getvalue('id_product');
         $this->addProductComment($userid, $productid);
-        $comments->getProductComments($productid);
-        $this->context->smarty->assign('comments', $comments);
-
-        $output = $this->display(__FILE__, 'views/templates/hook/hookDisplayProuctTab.tpl');
-
-        return $output;
 
         /* Place your code here. */
     }
@@ -511,9 +521,5 @@ class Customerreviews extends Module
 
             return $output;
         }
-    }
-
-    public function hookDisplayCustomerAccount()
-    {
     }
 }
