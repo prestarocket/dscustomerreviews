@@ -505,6 +505,8 @@ class Customerreviews extends Module
         $productid = (int) Tools::getValue('id_product');
         $reviews = $this->getProductComments($productid);
         $customer = Context::getContext()->customer->isLogged();
+        $isneed = $this->ifProductCommentsIsNeeded($productid);
+        var_dump($isneed);
 
         $this->context->smarty->assign('customer', $customer);
         $this->context->smarty->assign('reviews', $reviews);
