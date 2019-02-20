@@ -358,6 +358,8 @@ class Customerreviews extends Module
     {
         $currentlang = $this->context->language->id;
 
+        
+
         $sql = 'SELECT cr.stars, cr.content, cr.timeadded, cus.firstname, cus.lastname, od.product_name, od.id_order_detail
         FROM '._DB_PREFIX_.'customerreviews AS cr
         LEFT JOIN '._DB_PREFIX_.'order_detail AS od
@@ -415,11 +417,49 @@ class Customerreviews extends Module
         `currentdata` = 0';
     }
 
-    protected function addProductComment($orderdetail)
+    protected function addProductComment($id_order, $id_user, $timetowrite) //to ma być uruchomione gdy jest opłata
     {
+
         $currentlang = $this->context->language->id;
         $sql = '
         INSERT INTO '._DB_PREFIX_.'customerreviews 
+        (
+        `id_order_detail`,
+        `timetowrite`,
+        `visible`,
+        `visibleweight`,
+        `deleted`,
+        `slider`,
+        `sliderweight`,
+        `currentdata`
+        `reviewlang`
+        )
+        SELECT
+        id_order_detail,
+        '.$timetowrite.',
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        '.$currentlang.'
+        FROM
+        '._DB_PREFIX_.'order_detail
+        WHERE
+        id_order = '.$id_order.'
+
+
+
+        ';
+
+        $sql = Db::getInstance()->ExecuteS($sql);
+
+        return $sql;
+
+
+        /*
+                INSERT INTO '._DB_PREFIX_.'customerreviews 
         (
         `id_order_detail`,
         `timetowrite`,
@@ -443,11 +483,8 @@ class Customerreviews extends Module
         1,
         '.$currentlang.'
         )
-        ';
+        ';*/
 
-        $sql = Db::getInstance()->ExecuteS($sql);
-
-        return $sql;
     }
 
     /**
@@ -505,6 +542,7 @@ class Customerreviews extends Module
         $productid = (int) Tools::getValue('id_product');
         $reviews = $this->getProductComments($productid);
         $customer = Context::getContext()->customer->isLogged();
+        var_dump($productid);
         $isneed = $this->ifProductCommentsIsNeeded($productid);
         var_dump($isneed);
 
