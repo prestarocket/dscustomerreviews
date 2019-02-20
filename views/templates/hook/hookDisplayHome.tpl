@@ -24,6 +24,11 @@
 *}
 <div id='reviewsSlider' class='container-fluid'>
     <div class='row'>
-
+        {foreach $slidercomments as $comment}
+            {$comment.customer}
+            {$comment.comment}
+            {$comment.stars}
+            {$comment.product_id}
+        {/foreach}
     </div>
 </div>
