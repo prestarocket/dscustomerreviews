@@ -150,7 +150,8 @@ class Customerreviews extends Module
             $this->registerHook('registerGDPRConsent') &&
             $this->registerHook('actionDeleteGDPRCustomer') &&
             $this->registerHook('actionExportGDPRData') &&
-            $this->registerHook('actionOrderStatusPostUpdate');
+            $this->registerHook('actionOrderStatusPostUpdate') &&
+            $this->registerHook('actionPaymentConfirmation');
     }
 
     public function uninstall()
@@ -540,7 +541,14 @@ class Customerreviews extends Module
     {
     }
 
-    public function hookActionOrderStatusPostUpdate()
+    public function hookActionOrderStatusPostUpdate($params)
     {
+    }
+
+    public function hookActionPaymentConfirmation($params)
+    {
+        $orderId = $params['id_order'];
+        $customer = Context::getContext()->customer->isLogged();
+        $currentlang = $this->context->language->id;
     }
 }
