@@ -540,7 +540,5 @@ class Customerreviews extends Module
 
     public function hookActionOrderStatusPostUpdate()
     {
-        $dupa = '<h1>Dupa</h1>';
-        var_dump($dupa);
     }
 }
