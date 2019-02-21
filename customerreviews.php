@@ -284,9 +284,19 @@ class Customerreviews extends Module
     {
     }
 
-    protected function deleteComment($commentid)
+    protected function deleteComment($commentid)//nie chcemy tak
     {
-        $sql = 'DELETE * FROM '._DB_PREFIX_.'customerreviews WHERE id_comment = '.$commentid;
+        //$sql = 'DELETE * FROM '._DB_PREFIX_.'customerreviews WHERE id_comment = '.$commentid;
+        
+
+        $sql = 'UPDATE '._DB_PREFIX_.'customerreviews
+        SET 
+        `deleted` = 1
+        WHERE 
+        `id_comment` = '.$commentid;
+
+
+
         $sql = Db::getInstance()->execute($sql);
     }
 
