@@ -328,7 +328,6 @@ class Customerreviews extends Module
     protected function deleteComment($commentid)//nie chcemy tak
     {
         //$sql = 'DELETE * FROM '._DB_PREFIX_.'customerreviews WHERE id_comment = '.$commentid;
-        
 
         $sql = 'UPDATE '._DB_PREFIX_.'customerreviews
         SET 
@@ -338,7 +337,6 @@ class Customerreviews extends Module
 
         $sql = Db::getInstance()->execute($sql);
     }
-
 
     protected function getAllComments()
     {
@@ -558,10 +556,9 @@ class Customerreviews extends Module
         $productid = (int) Tools::getValue('id_product');
         $reviews = $this->getProductComments($productid);
         $customer = Context::getContext()->customer->isLogged();
-        var_dump($productid);
         $isneed = $this->ifProductCommentsIsNeeded($productid);
-        var_dump($isneed);
 
+        $this->context->smarty->assign('isneed', $isneed);
         $this->context->smarty->assign('customer', $customer);
         $this->context->smarty->assign('reviews', $reviews);
         $content = $this->display(__FILE__, 'views/templates/hook/hookDisplayProuctTab.tpl');
@@ -608,7 +605,6 @@ class Customerreviews extends Module
         $customer = Context::getContext()->customer->isLogged();
         $now = 'NOW()';
         $this->addProductComment($orderId, $customer, $now);
-        var_dump($orderId);
     }
 
     public function hookActionObjectOrderAddAfter($params)
@@ -617,6 +613,5 @@ class Customerreviews extends Module
         $customer = Context::getContext()->customer->isLogged();
         $now = 'NOW()';
         $this->addProductComment($orderId, $customer, $now);
-        var_dump($orderId);
     }
 }
