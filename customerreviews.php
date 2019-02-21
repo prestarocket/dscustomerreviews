@@ -283,13 +283,62 @@ class Customerreviews extends Module
 
     protected function approveComment($commentid)
     {
-    }
+        $sql = 'UPDATE '._DB_PREFIX_.'customerreviews
+        SET 
+        `visible` = 1
+        WHERE 
+        `id_comment` = '.$commentid;
 
-    protected function deleteComment($commentid)
-    {
-        $sql = 'DELETE * FROM '._DB_PREFIX_.'customerreviews WHERE id_comment = '.$commentid;
         $sql = Db::getInstance()->execute($sql);
     }
+
+    protected function weightComment($commentid, $weight)
+    {
+        $sql = 'UPDATE '._DB_PREFIX_.'customerreviews
+        SET 
+        `visibleweight` = '.$weight.'
+        WHERE 
+        `id_comment` = '.$commentid;
+
+        $sql = Db::getInstance()->execute($sql);
+    }
+
+    protected function approveSlider($commentid)
+    {
+        $sql = 'UPDATE '._DB_PREFIX_.'customerreviews
+        SET 
+        `slider` = 1
+        WHERE 
+        `id_comment` = '.$commentid;
+
+        $sql = Db::getInstance()->execute($sql);
+    }
+
+    protected function weightSlider($commentid, $weight)
+    {
+        $sql = 'UPDATE '._DB_PREFIX_.'customerreviews
+        SET 
+        `sliderweight` = '.$weight.'
+        WHERE 
+        `id_comment` = '.$commentid;
+
+        $sql = Db::getInstance()->execute($sql);
+    }
+
+    protected function deleteComment($commentid)//nie chcemy tak
+    {
+        //$sql = 'DELETE * FROM '._DB_PREFIX_.'customerreviews WHERE id_comment = '.$commentid;
+        
+
+        $sql = 'UPDATE '._DB_PREFIX_.'customerreviews
+        SET 
+        `deleted` = 1
+        WHERE 
+        `id_comment` = '.$commentid;
+
+        $sql = Db::getInstance()->execute($sql);
+    }
+
 
     protected function getAllComments()
     {
