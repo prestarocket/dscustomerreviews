@@ -151,7 +151,8 @@ class Customerreviews extends Module
             $this->registerHook('actionDeleteGDPRCustomer') &&
             $this->registerHook('actionExportGDPRData') &&
             $this->registerHook('actionOrderStatusPostUpdate') &&
-            $this->registerHook('actionPaymentConfirmation');
+            $this->registerHook('actionPaymentConfirmation') &&
+            $this->registerHook('ActionObjectOrderAddAfter');
     }
 
     public function uninstall()
@@ -359,8 +360,6 @@ class Customerreviews extends Module
     {
         $currentlang = $this->context->language->id;
 
-        
-
         $sql = 'SELECT cr.stars, cr.content, cr.timeadded, cus.firstname, cus.lastname, od.product_name, od.id_order_detail
         FROM '._DB_PREFIX_.'customerreviews AS cr
         LEFT JOIN '._DB_PREFIX_.'order_detail AS od
@@ -420,7 +419,6 @@ class Customerreviews extends Module
 
     protected function addProductComment($id_order, $id_user, $timetowrite) //to ma być uruchomione gdy jest opłata
     {
-
         $currentlang = $this->context->language->id;
         $sql = '
         INSERT INTO '._DB_PREFIX_.'customerreviews 
@@ -432,7 +430,7 @@ class Customerreviews extends Module
         `deleted`,
         `slider`,
         `sliderweight`,
-        `currentdata`
+        `currentdata`,
         `reviewlang`
         )
         SELECT
@@ -449,43 +447,11 @@ class Customerreviews extends Module
         '._DB_PREFIX_.'order_detail
         WHERE
         id_order = '.$id_order.'
-
-
-
         ';
 
-        $sql = Db::getInstance()->ExecuteS($sql);
+        $sql = Db::getInstance()->execute($sql);
 
         return $sql;
-
-
-        /*
-                INSERT INTO '._DB_PREFIX_.'customerreviews 
-        (
-        `id_order_detail`,
-        `timetowrite`,
-        `visible`,
-        `visibleweight`,
-        `deleted`,
-        `slider`,
-        `sliderweight`,
-        `currentdata`
-        `reviewlang`
-        )
-        VALUES
-        (
-        '.$orderdetail.',
-        '.$timetowrite.',
-        0,
-        0,
-        0,
-        0,
-        0,
-        1,
-        '.$currentlang.'
-        )
-        ';*/
-
     }
 
     /**
@@ -581,12 +547,27 @@ class Customerreviews extends Module
 
     public function hookActionOrderStatusPostUpdate($params)
     {
+        $orderId = $params['id_order'];
+        $customer = Context::getContext()->customer->isLogged();
+        $now = 'NOW()';
+        $this->addProductComment($orderId, $customer, $now);
     }
 
     public function hookActionPaymentConfirmation($params)
     {
         $orderId = $params['id_order'];
         $customer = Context::getContext()->customer->isLogged();
-        $currentlang = $this->context->language->id;
+        $now = 'NOW()';
+        $this->addProductComment($orderId, $customer, $now);
+        var_dump($orderId);
+    }
+
+    public function hookActionObjectOrderAddAfter($params)
+    {
+        $orderId = $params['id_order'];
+        $customer = Context::getContext()->customer->isLogged();
+        $now = 'NOW()';
+        $this->addProductComment($orderId, $customer, $now);
+        var_dump($orderId);
     }
 }
