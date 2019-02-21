@@ -433,7 +433,11 @@ class Customerreviews extends Module
     {
         $currentlang = $this->context->language->id;
         $stars = Tools::getValue('stars');
+        $starsint = (int)$stars;
         $content = Tools::getValue('reviews');
+        $title = 'dupa';
+        $time = 'NOW()';
+        $id_order_detailint = (int)$id_order_detail;
         var_dump($currentlang);
         var_dump($stars);
         var_dump($id_order_detail);
@@ -441,15 +445,17 @@ class Customerreviews extends Module
 
         $sql = 'UPDATE '._DB_PREFIX_.'customerreviews
         SET 
-        `timeadded` = now(),
-        `stars` = '.$stars.',
-        `title` = '.$title.',
-        `content` = '.$content.',
+        `timeadded` = '.$time.',
+        `stars` = '.$starsint.',
+        `title` = "'.$title.'",
+        `content` = "'.$content.'",
         `currentdata` = 0
         WHERE 
-        `id_order_detail` = '.$id_order_detail;
+        `id_order_detail` = '.$id_order_detailint;
 
-        $sql = Db::getInstance()->ExecuteS($sql);
+        echo $sql;
+
+        $sql = Db::getInstance()->Execute($sql);
 
         return $sql;
     }
