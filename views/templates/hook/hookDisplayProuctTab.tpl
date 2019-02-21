@@ -26,7 +26,7 @@
     {$isneed[0]["id_order_detail"]|var_dump}
     {if $customer == true}
         <div id='add_review'>
-            <form type=POST>
+            <form method=POST>
                 <div class='rating'>
                     <input type='hidden' name='addReview'>
                     <input type='hidden' name='id_order_detail' value='{$isneed[0]["id_order_detail"]}'>

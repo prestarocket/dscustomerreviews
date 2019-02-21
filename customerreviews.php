@@ -433,11 +433,11 @@ class Customerreviews extends Module
     {
         $currentlang = $this->context->language->id;
         $stars = Tools::getValue('stars');
-        $starsint = (int)$stars;
+        $starsint = (int) $stars;
         $content = Tools::getValue('reviews');
         $title = 'dupa';
         $time = 'NOW()';
-        $id_order_detailint = (int)$id_order_detail;
+        $id_order_detailint = (int) $id_order_detail;
         var_dump($currentlang);
         var_dump($stars);
         var_dump($id_order_detail);
@@ -453,7 +453,28 @@ class Customerreviews extends Module
         WHERE 
         `id_order_detail` = '.$id_order_detailint;
 
-        echo $sql;
+        $sql .= 'UPDATE '._DB_PREFIX_.'customerreviews AS cr
+        LEFT JOIN '._DB_PREFIX_.'order_detail AS od
+        ON cr.id_order_detail = od.id_order_detail
+        LEFT JOIN '._DB_PREFIX_.'orders AS ord
+        ON od.id_order = ord.id_order
+        WHERE  
+        pr.id_product = 
+        (
+        SELECT DISTINCT pr.id_product 
+        FROM '._DB_PREFIX_.'customerreviews AS cr
+        LEFT JOIN '._DB_PREFIX_.'order_detail AS od
+        ON cr.id_order_detail = od.id_order_detail
+        LEFT JOIN '._DB_PREFIX_.'orders AS ord
+        ON od.id_order = ord.id_order
+        LEFT JOIN '._DB_PREFIX_.'product AS pr
+        ON pr.id_product = od.product_id
+        LEFT JOIN '._DB_PREFIX_.'customer AS cus
+        ON cus.id_customer = ord.id_customer
+        WHERE  `id_order_detail` = '.$id_order_detail.'
+        )
+        AND ord.id_customer = '.$currentcustomer.'
+        SET `currentdata` = 0';
 
         $sql = Db::getInstance()->Execute($sql);
 
