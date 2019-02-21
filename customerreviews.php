@@ -282,6 +282,46 @@ class Customerreviews extends Module
 
     protected function approveComment($commentid)
     {
+        $sql = 'UPDATE '._DB_PREFIX_.'customerreviews
+        SET 
+        `visible` = 1
+        WHERE 
+        `id_comment` = '.$commentid;
+
+        $sql = Db::getInstance()->execute($sql);
+    }
+
+    protected function weightComment($commentid, $weight)
+    {
+        $sql = 'UPDATE '._DB_PREFIX_.'customerreviews
+        SET 
+        `visibleweight` = '.$weight.'
+        WHERE 
+        `id_comment` = '.$commentid;
+
+        $sql = Db::getInstance()->execute($sql);
+    }
+
+    protected function approveSlider($commentid)
+    {
+        $sql = 'UPDATE '._DB_PREFIX_.'customerreviews
+        SET 
+        `slider` = 1
+        WHERE 
+        `id_comment` = '.$commentid;
+
+        $sql = Db::getInstance()->execute($sql);
+    }
+
+    protected function weightSlider($commentid, $weight)
+    {
+        $sql = 'UPDATE '._DB_PREFIX_.'customerreviews
+        SET 
+        `sliderweight` = '.$weight.'
+        WHERE 
+        `id_comment` = '.$commentid;
+
+        $sql = Db::getInstance()->execute($sql);
     }
 
     protected function deleteComment($commentid)//nie chcemy tak
@@ -295,10 +335,9 @@ class Customerreviews extends Module
         WHERE 
         `id_comment` = '.$commentid;
 
-
-
         $sql = Db::getInstance()->execute($sql);
     }
+
 
     protected function getAllComments()
     {
@@ -368,8 +407,6 @@ class Customerreviews extends Module
     protected function ifProductCommentsIsNeeded($productid)
     {
         $currentlang = $this->context->language->id;
-
-        
 
         $sql = 'SELECT cr.stars, cr.content, cr.timeadded, cus.firstname, cus.lastname, od.product_name, od.id_order_detail
         FROM '._DB_PREFIX_.'customerreviews AS cr
