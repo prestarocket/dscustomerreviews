@@ -359,6 +359,10 @@ class Customerreviews extends Module
         return $sql;
     }
 
+    protected function getFromData()
+    {
+    }
+
     protected function getSliderComments()
     {
         $currentlang = $this->context->language->id;
@@ -425,9 +429,15 @@ class Customerreviews extends Module
         return $sql;
     }
 
-    protected function insertProductComment($id_order_detail)
+    protected function insertProductComment($id_order_detail, $currentcustomer)
     {
         $currentlang = $this->context->language->id;
+        $stars = Tools::getValue('stars');
+        $content = Tools::getValue('reviews');
+        var_dump($currentlang);
+        var_dump($stars);
+        var_dump($id_order_detail);
+        var_dump($content);
 
         $sql = 'UPDATE '._DB_PREFIX_.'customerreviews
         SET 
@@ -439,29 +449,9 @@ class Customerreviews extends Module
         WHERE 
         `id_order_detail` = '.$id_order_detail;
 
-        $sql = 'UPDATE '._DB_PREFIX_.'customerreviews AS cr
-        LEFT JOIN '._DB_PREFIX_.'order_detail AS od
-        ON cr.id_order_detail = od.id_order_detail
-        LEFT JOIN '._DB_PREFIX_.'orders AS ord
-        ON od.id_order = ord.id_order
-        WHERE  
-        pr.id_product = 
-        (
-        SELECT DISTINCT pr.id_product 
-        FROM '._DB_PREFIX_.'customerreviews AS cr
-        LEFT JOIN '._DB_PREFIX_.'order_detail AS od
-        ON cr.id_order_detail = od.id_order_detail
-        LEFT JOIN '._DB_PREFIX_.'orders AS ord
-        ON od.id_order = ord.id_order
-        LEFT JOIN '._DB_PREFIX_.'product AS pr
-        ON pr.id_product = od.product_id
-        LEFT JOIN '._DB_PREFIX_.'customer AS cus
-        ON cus.id_customer = ord.id_customer
-        WHERE  `id_order_detail` = '.$id_order_detail.'
-        )
-        AND ord.id_customer = '.$currentcustomer.'
-        SET 
-        `currentdata` = 0';
+        $sql = Db::getInstance()->ExecuteS($sql);
+
+        return $sql;
     }
 
     protected function addProductComment($id_order, $id_user, $timetowrite) //to ma być uruchomione gdy jest opłata
@@ -557,6 +547,8 @@ class Customerreviews extends Module
         $reviews = $this->getProductComments($productid);
         $customer = Context::getContext()->customer->isLogged();
         $isneed = $this->ifProductCommentsIsNeeded($productid);
+        $addreviews = Tools::isSubmit('addReview');
+        $customerid = Context::getContext()->customer->id;
 
         $this->context->smarty->assign('isneed', $isneed);
         $this->context->smarty->assign('customer', $customer);
@@ -566,6 +558,13 @@ class Customerreviews extends Module
         $array[] = (new PrestaShop\PrestaShop\Core\Product\ProductExtraContent())
             ->setTitle($title)
             ->setContent($content);
+
+        if ($addreviews) {
+            $id_order_detail = Tools::getValue('id_order_detail');
+            $this->insertProductComment($id_order_detail, $customerid);
+            var_dump('true');
+            $this->_clearCache($this->templateFile);
+        }
 
         return $array;
     }
