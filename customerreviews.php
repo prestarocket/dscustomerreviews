@@ -359,6 +359,31 @@ class Customerreviews extends Module
         return $sql;
     }
 
+    protected function getAllCommentsFromUser($id_user)
+    {
+        $currentlang = $this->context->language->id;
+
+        $sql = 'SELECT * FROM '._DB_PREFIX_.'customerreviews AS cr
+        LEFT JOIN '._DB_PREFIX_.'order_detail AS od
+        ON cr.id_order_detail = od.id_order_detail
+        LEFT JOIN '._DB_PREFIX_.'orders AS ord
+        ON od.id_order = ord.id_order
+        LEFT JOIN '._DB_PREFIX_.'product AS pr
+        ON pr.id_product = od.product_id
+        LEFT JOIN '._DB_PREFIX_.'customer AS cus
+        ON cus.id_customer = ord.id_customer
+        WHERE cr.reviewlang = '.$currentlang.'
+        AND
+        ord.id_customer = '.$id_user.'
+
+        ';
+
+        $sql = Db::getInstance()->ExecuteS($sql);
+
+        return $sql;
+    }
+
+
     protected function getFromData()
     {
     }
@@ -453,6 +478,40 @@ class Customerreviews extends Module
         WHERE 
         `id_order_detail` = '.$id_order_detailint;
 
+        $sql = Db::getInstance()->Execute($sql);
+
+        return $sql;
+    }
+
+    protected function addProductComment($id_order, $id_user, $timetowrite) //to ma być uruchomione gdy jest opłata
+    {
+        $currentlang = $this->context->language->id;
+        
+        $sql = '
+        DELETE FROM '._DB_PREFIX_.'customerreviews
+        WHERE 
+        id_order_detail IN
+        (
+            SELECT odb.id_order_detail
+            FROM '._DB_PREFIX_.'orders AS ord
+            INNER JOIN '._DB_PREFIX_.'order_detail AS oda
+            ON ord.id_order = oda.id_order 
+            LEFT JOIN '._DB_PREFIX_.'order_detail AS odb
+            ON oda.product_id = odb.product_id 
+            WHERE
+            ord.id_order = '.$id_order.'
+            AND
+            ord.id_customer = '.$id_user.'
+        )
+        AND
+        currentdata = 1
+        '
+        ;
+
+        $sql = Db::getInstance()->Execute($sql);
+
+
+/*
         $sql .= 'UPDATE '._DB_PREFIX_.'customerreviews AS cr
         LEFT JOIN '._DB_PREFIX_.'order_detail AS od
         ON cr.id_order_detail = od.id_order_detail
@@ -471,19 +530,18 @@ class Customerreviews extends Module
         ON pr.id_product = od.product_id
         LEFT JOIN '._DB_PREFIX_.'customer AS cus
         ON cus.id_customer = ord.id_customer
-        WHERE  `id_order_detail` = '.$id_order_detail.'
+        WHERE  `id_order_detail` = '.$id_order_detailint.'
         )
         AND ord.id_customer = '.$currentcustomer.'
         SET `currentdata` = 0';
 
         $sql = Db::getInstance()->Execute($sql);
 
-        return $sql;
-    }
+*/
 
-    protected function addProductComment($id_order, $id_user, $timetowrite) //to ma być uruchomione gdy jest opłata
-    {
-        $currentlang = $this->context->language->id;
+
+
+
         $sql = '
         INSERT INTO '._DB_PREFIX_.'customerreviews 
         (
@@ -620,7 +678,7 @@ class Customerreviews extends Module
     public function hookActionOrderStatusPostUpdate($params)
     {
         $orderId = $params['id_order'];
-        $customer = Context::getContext()->customer->isLogged();
+        $customer = Context::getContext()->customer->id;
         $now = 'NOW()';
         $this->addProductComment($orderId, $customer, $now);
     }
@@ -628,7 +686,7 @@ class Customerreviews extends Module
     public function hookActionPaymentConfirmation($params)
     {
         $orderId = $params['id_order'];
-        $customer = Context::getContext()->customer->isLogged();
+        $customer = Context::getContext()->customer->id;
         $now = 'NOW()';
         $this->addProductComment($orderId, $customer, $now);
     }
@@ -636,7 +694,7 @@ class Customerreviews extends Module
     public function hookActionObjectOrderAddAfter($params)
     {
         $orderId = $params['id_order'];
-        $customer = Context::getContext()->customer->isLogged();
+        $customer = Context::getContext()->customer->id;
         $now = 'NOW()';
         $this->addProductComment($orderId, $customer, $now);
     }
