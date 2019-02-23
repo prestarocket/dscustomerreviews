@@ -406,6 +406,32 @@ class Customerreviews extends Module
         return $sql;
     }
 
+    protected function deleteAllCustomerComments($id_user)
+    {
+        $id_userint = (int) $id_user;
+
+        $sql = '
+        DELETE FROM '._DB_PREFIX_.'customerreviews
+        WHERE 
+        id_order_detail IN
+        (
+            SELECT odb.id_order_detail
+            FROM '._DB_PREFIX_.'order_detail AS oda
+            INNER JOIN '._DB_PREFIX_.'orders AS ord
+            ON ord.id_order = oda.id_order 
+            WHERE
+            ord.id_customer = '.$id_userint.'
+        )
+        '
+        ;
+
+        $sql = Db::getInstance()->Execute($sql);
+    }
+
+    
+
+
+
     protected function getAllSlider()
     {
         $sql = 'SELECT cus.firstname, cus.lastname, cr.stars, cr.content, pr.id_product, od.product_name, cr.timeadded, cr.visible, cr.visibleweight, cr.slider, cr.reviewlang
