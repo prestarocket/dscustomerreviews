@@ -179,20 +179,30 @@ class Customerreviews extends Module
         if (((bool) Tools::isSubmit('submitCustomerreviewsModule')) == true) {
             $this->postProcess();
         }
-        $comments = $this->getAllComments();
-        $slider = $this->getSliderComments();
+
         $datas = Tools::getValue('commentId');
         $sliderForm = Tools::getValue('sliderAprrove');
-        $values = Tools::getValue('slider');
+        $values = Tools::getValue('slider');//visible
+        $visiblevalues = Tools::getValue('visible');//visible
 
         if (isset($sliderForm) && $datas != null && $values != null) {
-            foreach ($datas as $data) {
-                foreach ($values as $value) {
-                    $this->approveSlider($data, $value);
-                    $this->_clearCache($this->templateFile);
-                }
+            foreach ($values as $data => $value) {
+                $this->approveSlider($data, $value);
+               // $this->_clearCache($this->templateFile);
             }
         }
+
+
+        if (isset($sliderForm) && $datas != null && $visiblevalues != null) {
+            foreach ($visiblevalues as $data => $value) {
+                $this->approveComment($data, $value);
+               // $this->_clearCache($this->templateFile);
+            }
+        }
+
+        $comments = $this->getAllComments();
+        $slider = $this->getSliderComments();
+
         $this->context->smarty->assign('module_dir', $this->_path);
         $this->context->smarty->assign('comments', $comments);
         $this->context->smarty->assign('slider', $slider);
@@ -298,46 +308,56 @@ class Customerreviews extends Module
 
     protected function approveComment($commentid, $value)
     {
+        $valueint = (int) $value;
+        $commentidint = (int) $commentid;
+
         $sql = 'UPDATE '._DB_PREFIX_.'customerreviews
         SET 
         `visible` = '.$value.'
         WHERE 
-        `id_comment` = '.$commentid;
+        `id_customerreviews` = '.$commentidint;
 
         $sql = Db::getInstance()->execute($sql);
     }
 
-    protected function weightComment($commentid, $weight)
+    protected function weightComment($commentid, $value)
     {
+        $valueint = (int) $value;
+        $commentidint = (int) $commentid;
+
         $sql = 'UPDATE '._DB_PREFIX_.'customerreviews
         SET 
-        `visibleweight` = '.$weight.'
+        `visibleweight` = '.$valueint.'
         WHERE 
-        `id_comment` = '.$commentid;
+        `id_customerreviews` = '.$commentidint;
 
         $sql = Db::getInstance()->execute($sql);
     }
 
     protected function approveSlider($commentid, $value)
     {
-        var_dump($commentid);
-        var_dump($value);
+        $valueint = (int) $value;
+        $commentidint = (int) $commentid;
+
         $sql = 'UPDATE '._DB_PREFIX_.'customerreviews
         SET 
-        `slider` =  '.$value.'
+        `slider` =  '.$valueint.'
         WHERE 
-        `id_customerreviews` = '.$commentid;
+        `id_customerreviews` = '.$commentidint;
 
         $sql = Db::getInstance()->execute($sql);
     }
 
-    protected function weightSlider($commentid, $weight)
+    protected function weightSlider($commentid, $value)
     {
+        $valueint = (int) $value;
+        $commentidint = (int) $commentid;
+
         $sql = 'UPDATE '._DB_PREFIX_.'customerreviews
         SET 
-        `sliderweight` = '.$weight.'
+        `sliderweight` = '.$valueint.'
         WHERE 
-        `id_comment` = '.$commentid;
+        `id_customerreviews` = '.$commentidint;
 
         $sql = Db::getInstance()->execute($sql);
     }
@@ -350,7 +370,7 @@ class Customerreviews extends Module
         SET 
         `deleted` = 1
         WHERE 
-        `id_comment` = '.$commentid;
+        `id_customerreviews` = '.$commentid;
 
         $sql = Db::getInstance()->execute($sql);
     }
@@ -719,7 +739,6 @@ class Customerreviews extends Module
 
     public function hookActionExportGDPRData($customer)
     {
-        $this->getAllCommentsFromUser($customer);
     }
 
     public function hookActionPaymentConfirmation($params)
