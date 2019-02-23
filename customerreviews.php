@@ -182,21 +182,18 @@ class Customerreviews extends Module
 
         $datas = Tools::getValue('commentId');
         $sliderForm = Tools::getValue('sliderAprrove');
-        $values = Tools::getValue('slider');//visible
-        $visiblevalues = Tools::getValue('visible');//visible
+        $values = Tools::getValue('slider'); //visible
+        $visiblevalues = Tools::getValue('visible'); //visible
 
         if (isset($sliderForm) && $datas != null && $values != null) {
             foreach ($values as $data => $value) {
                 $this->approveSlider($data, $value);
-               // $this->_clearCache($this->templateFile);
             }
         }
-
 
         if (isset($sliderForm) && $datas != null && $visiblevalues != null) {
             foreach ($visiblevalues as $data => $value) {
                 $this->approveComment($data, $value);
-               // $this->_clearCache($this->templateFile);
             }
         }
 
@@ -292,11 +289,12 @@ class Customerreviews extends Module
                     ),
                     array(
                         'col' => 3,
-                        'type' => 'number',
-                        'prefix' => '<i class="icon icon-envelope"></i>',
-                        'desc' => $this->l('How long after the purchase can the customer add a comment?'),
+                        'type' => 'html',
+                        'prefix' => '<i class="icon icon-clock"></i>',
+                        'desc' => $this->l('How long after (in days) the purchase can the customer add a comment?'),
                         'name' => 'CUSTOMERREVIEWS_TIMEAFTER',
                         'label' => $this->l('Time after buy'),
+                        'html_content' => '<input type="number" name="CUSTOMERREVIEWS_TIMEAFTER">',
                     ),
                 ),
                 'submit' => array(
@@ -362,10 +360,8 @@ class Customerreviews extends Module
         $sql = Db::getInstance()->execute($sql);
     }
 
-    protected function deleteComment($commentid)//nie chcemy tak
+    protected function deleteComment($commentid)
     {
-        //$sql = 'DELETE * FROM '._DB_PREFIX_.'customerreviews WHERE id_comment = '.$commentid;
-
         $sql = 'UPDATE '._DB_PREFIX_.'customerreviews
         SET 
         `deleted` = 1
@@ -391,8 +387,6 @@ class Customerreviews extends Module
 
     protected function getAllComments()
     {
-        $currentlang = $this->context->language->id;
-
         $sql = '
         SELECT  cr.id_customerreviews, cus.firstname, cus.lastname, cr.stars, cr.content, pr.id_product, od.product_name, cr.timeadded, cr.visible, cr.visibleweight, cr.slider, cr.reviewlang
         FROM '._DB_PREFIX_.'customerreviews AS cr
@@ -414,8 +408,6 @@ class Customerreviews extends Module
 
     protected function getAllSlider()
     {
-        $currentlang = $this->context->language->id;
-
         $sql = 'SELECT cus.firstname, cus.lastname, cr.stars, cr.content, pr.id_product, od.product_name, cr.timeadded, cr.visible, cr.visibleweight, cr.slider, cr.reviewlang
         FROM '._DB_PREFIX_.'customerreviews AS cr
         LEFT JOIN '._DB_PREFIX_.'order_detail AS od
@@ -457,10 +449,6 @@ class Customerreviews extends Module
         $sql = Db::getInstance()->ExecuteS($sql);
 
         return $sql;
-    }
-
-    protected function getFromData()
-    {
     }
 
     protected function getSliderComments()
@@ -694,7 +682,7 @@ class Customerreviews extends Module
 
     public function hookdisplayProductExtraContent($params)
     {
-        $title = $this->l('Opinie o produkcie');
+        $title = $this->l('Reviews');
         $productid = (int) Tools::getValue('id_product');
         $reviews = $this->getProductComments($productid);
         $customer = Context::getContext()->customer->isLogged();
@@ -735,10 +723,12 @@ class Customerreviews extends Module
 
     public function hookActionDeleteGDPRCustomer($customer)
     {
+        $this->deleteAllCustomerComments($customer);
     }
 
     public function hookActionExportGDPRData($customer)
     {
+        $this->getAllCommentsFromUser($customer);
     }
 
     public function hookActionPaymentConfirmation($params)
