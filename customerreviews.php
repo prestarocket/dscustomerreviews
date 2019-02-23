@@ -719,6 +719,7 @@ class Customerreviews extends Module
 
     public function hookActionExportGDPRData($customer)
     {
+        $this->getAllCommentsFromUser($customer);
     }
 
     public function hookActionPaymentConfirmation($params)
