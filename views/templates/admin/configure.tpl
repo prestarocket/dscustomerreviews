@@ -25,63 +25,102 @@
 
 <div class="panel">
 	<h3><i class="icon icon-credit-card"></i> {l s='Customer Reviews' mod='customerreviews'}</h3>
-	<table class='table'>
-		<thead class='thead-default'>
-			<tr class="column-headers">
-				<th scope="col">#</th>
-				<th scope="col">{l s='Customer name' mod='customerreviews'}</th>
-				<th scope="col">{l s='Stars' mod='customerreviews'}</th>
-				<th scope="col">{l s='Reviews' mod='customerreviews'}</th>
-				<th scope="col">{l s='Product  name' mod='customerreviews'}</th>
-				<th scope="col">{l s='Date Add' mod='customerreviews'}</th>
-				<th scope="col">{l s='Aprroved' mod='customerreviews'}</th>
-				<th scope="col">{l s='Slider' mod='customerreviews'}</th>
-				<th scope="col">{l s='Actions' mod='customerreviews'}</th>
-			</tr>
-		</thead>
-		<tbody>
-			{foreach $comments as $comment}
-				<tr>
-					<th>{$comment.customer}</th>
-					<td>{$comment.stars}</td>
-					<td>{$comment.comment}</td>
-					<td></td>
-					<td>{$comment.date}</td>
-					<td>{$comment.approved}</td>
-					<td>{$comment.slider}</td>
-					<td>
-						<div class='btn-group-action'>
-							<div class='btn-group'>
-								
-							</div>
-						</div>
-					</td>
+	<form method=POST>
+	<input type='hidden' name='sliderAprrove'>
+	<div class='form-wrapper'>
+		<table class='table'>
+			<thead class='thead-default'>
+				<tr class="column-headers">
+					<th scope="col">#</th>
+					<th scope="col">{l s='Customer name' mod='customerreviews'}</th>
+					<th scope="col">{l s='Stars' mod='customerreviews'}</th>
+					<th scope="col">{l s='Reviews' mod='customerreviews'}</th>
+					<th scope="col">{l s='Product  name' mod='customerreviews'}</th>
+					<th scope="col">{l s='Date Add' mod='customerreviews'}</th>
+					<th scope="col">{l s='Aprroved' mod='customerreviews'}</th>
+					<th scope="col">{l s='Slider' mod='customerreviews'}</th>
+					<th scope="col">{l s='Delete' mod='customerreviews'}</th>
 				</tr>
-			{/foreach}
-		<tbody>
-	</table>
+			</thead>
+			<tbody>
+			{if isset($comments) && $comments != null}
+				{foreach from=$comments key=i item=$comment}
+					<input type='hidden' name='commentId[{$comment.id_customerreviews}]' value='{$comment.id_customerreviews}'>
+					<tr>
+						<th>{$i+1}</th>
+						<td>{$comment.firstname} {$comment.lastname}</td>
+						<td>{$comment.stars}</td>
+						<td>{$comment.content}</td>
+						<td>{$comment.product_name}</td>
+						<td>{$comment.timeadded}</td>
+						<td>
+							<span class="switch prestashop-switch fixed-width-md">
+								<input type="radio" name="visible[{$comment.id_customerreviews}]" id='visible{$comment.id_customerreviews}_on' value="1" {if $comment.visible == 1}  checked="checked"{/if}>
+								<label for="visible{$comment.id_customerreviews}_on">Tak</label>
+								<input type="radio" name="visible[{$comment.id_customerreviews}]" id='visible{$comment.id_customerreviews}_off' value="0" {if $comment.visible == 0}  checked="checked"{/if}>
+								<label for="visible{$comment.id_customerreviews}_off">Nie</label>
+								<a class="slide-button btn"></a>
+							</span>
+						</td>
+						<td>
+							<span class="switch prestashop-switch fixed-width-md">
+								<input type="radio" name="slider[{$comment.id_customerreviews}]" id='slider{$comment.id_customerreviews}_on' value="1" {if $comment.slider == 1}  checked="checked"{/if}>
+								<label for="slider{$comment.id_customerreviews}_on">Tak</label>
+								<input type="radio" name="slider[{$comment.id_customerreviews}]" id='slider{$comment.id_customerreviews}_off' value="0" {if $comment.slider == 0}  checked="checked"{/if}>
+								<label for="slider{$comment.id_customerreviews}_off">Nie</label>
+								<a class="slide-button btn"></a>
+							</span>
+						</td>
+						<td>
+							<input type='checkbox' name='delete[{$comment.id_customerreviews}]' class='form-control'>
+						</td>
+					</tr>
+				{/foreach}
+			{else}
+				{l s='No comments' mod='customerreviews'}
+			{/if}
+			<tbody>
+		</table>
+	</div>
+		<div class='panel-footer'>
+			<button class='btn btn-default pull-right'><i class="process-icon-save"></i>{l s='Save' mod='customerreviews'}</button>
+		</div>
+	</form>
 </div>
 
 <div class="panel">
 	<h3><i class="icon icon-tags"></i> {l s='Slider order' mod='customerreviews'}</h3>
-	<table class='table'>
-		<thead class='thead-default'>
-			<tr class="column-headers">
-				<th scope="col">{l s='Customer name' mod='customerreviews'}</th>
-				<th scope="col">{l s='Stars' mod='customerreviews'}</th>
-				<th scope="col">{l s='Reviews' mod='customerreviews'}</th>
-				<th scope="col">{l s='Position' mod='customerreviews'}</th>
-			</tr>
-		</thead>
-		<tbody>
-			{foreach $slider as $item}
-				<tr id='{$item.id}'>
-					<th>{$item.customer}</th>
-					<td>{$item.stars}</td>
-					<td>{$item.comment}</td>
-					<td>{$item.position}</td>
-				</tr>
-			{/foreach}
-		</tbody>
-	</table>
+	<form method=POST>
+		<div class='form-wrapper'>
+			<table class='table'>
+				<thead class='thead-default'>
+					<tr class="column-headers">
+						<th scope="col">{l s='Position' mod='customerreviews'}</th>
+						<th scope="col">{l s='Customer name' mod='customerreviews'}</th>
+						<th scope="col">{l s='Stars' mod='customerreviews'}</th>
+						<th scope="col">{l s='Reviews' mod='customerreviews'}</th>				
+					</tr>
+				</thead>
+				<tbody>
+					
+						<input type='hidden' name='sliderOrder'>
+						{if isset($slider) && $slider != null}
+							{foreach $slider as $item}
+								<tr id='{$item.id_customerreviews}'>
+									<td>{$item.sliderweight}</td>
+									<td>{$item.firstname} {$item.lastname}</td>
+									<td>{$item.stars}</td>
+									<td>{$item.content}</td>					
+								</tr>
+							{/foreach}
+						{else}
+							{l s='No comments in slider' mod='customerreviews'}
+						{/if}			
+				</tbody>
+			</table>
+		</div>
+		<div class='panel-footer'>
+			<button class='btn btn-default pull-right'><i class="process-icon-save"></i>{l s='Save' mod='customerreviews'}</button>
+		</div>
+	</form>
 </div>
