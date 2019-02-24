@@ -124,3 +124,44 @@
 		</div>
 	</form>
 </div>
+
+<div class='pannel'>
+	<h3><i class="icon icon-tags"></i> {l s='Status included' mod='customerreviews'}</h3>
+	<small>{l s='Select which status allow to write review to customer' mod='customerreviews'}</small>
+	<form method=POST>
+		<input type='hidden' name='includedStatuses'>
+		<div class='form-wrapper'>
+			<table>
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>{l s='Status name' mod='customerreviews'}</th>
+						<th>{l s='Action' mod='customerreviews'}
+					</tr>
+				</thead>
+				<tbody>
+					{foreach from=$statuses key=i item=$status}
+						<tr>
+							<th>{$i+1}</th>
+							<td>{$status}</td>
+							<td>
+								<span class="switch prestashop-switch fixed-width-md">
+									<input type="radio" name="status[{$status.id}]" id='status{$status.id}_on' value="1" {if $status.visible == 1}  checked="checked"{/if}>
+									<label for="status{$status.id}_on">Tak</label>
+									<input type="radio" name="status[{$status.id}]" id='status{$status.id}_off' value="0" {if $status.visible == 0}  checked="checked"{/if}>
+									<label for="status{$status.id}_off">Nie</label>
+									<a class="slide-button btn"></a>
+								</span>
+							</td>
+						</tr>
+					{/foreach}
+				</tbody>
+			</table>
+		</div>
+		<div class='panel-footer'>
+			<div class='panel-footer'>
+				<button class='btn btn-default pull-right'><i class="process-icon-save"></i>{l s='Save' mod='customerreviews'}</button>
+			</div>
+		</div>
+	</form>
+</div>

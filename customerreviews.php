@@ -182,8 +182,8 @@ class Customerreviews extends Module
 
         $datas = Tools::getValue('commentId');
         $sliderForm = Tools::getValue('sliderAprrove');
-        $values = Tools::getValue('slider'); //visible
-        $visiblevalues = Tools::getValue('visible'); //visible
+        $values = Tools::getValue('slider');
+        $visiblevalues = Tools::getValue('visible');
 
         if (isset($sliderForm) && $datas != null && $values != null) {
             foreach ($values as $data => $value) {
@@ -205,6 +205,11 @@ class Customerreviews extends Module
         $this->context->smarty->assign('slider', $slider);
 
         $output = $this->context->smarty->fetch($this->local_path.'views/templates/admin/configure.tpl');
+
+        if ($datas != null || $visiblevalues != null) {
+            $confirmation = $this->displayConfirmation($this->l('Settings updated'));
+            $output = $confirmation .= $output;
+        }
 
         return $output.$this->renderForm();
     }
@@ -294,7 +299,7 @@ class Customerreviews extends Module
                         'desc' => $this->l('How long after (in days) the purchase can the customer add a comment?'),
                         'name' => 'CUSTOMERREVIEWS_TIMEAFTER',
                         'label' => $this->l('Time after buy'),
-                        'html_content' => '<input type="number" name="CUSTOMERREVIEWS_TIMEAFTER">',
+                        'html_content' => '<input type="number" class="form-control" name="CUSTOMERREVIEWS_TIMEAFTER">',
                     ),
                 ),
                 'submit' => array(
@@ -428,10 +433,6 @@ class Customerreviews extends Module
         $sql = Db::getInstance()->Execute($sql);
     }
 
-    
-
-
-
     protected function getAllSlider()
     {
         $sql = 'SELECT cus.firstname, cus.lastname, cr.stars, cr.content, pr.id_product, od.product_name, cr.timeadded, cr.visible, cr.visibleweight, cr.slider, cr.reviewlang
@@ -456,7 +457,7 @@ class Customerreviews extends Module
     {
         $currentlang = $this->context->language->id;
 
-        $sql = 'SELECT * FROM '._DB_PREFIX_.'customerreviews AS cr
+        $sql = 'SELECT cr.stars, cr.timeadded, cr.content, od.product_name FROM '._DB_PREFIX_.'customerreviews AS cr
         LEFT JOIN '._DB_PREFIX_.'order_detail AS od
         ON cr.id_order_detail = od.id_order_detail
         LEFT JOIN '._DB_PREFIX_.'orders AS ord
@@ -468,8 +469,6 @@ class Customerreviews extends Module
         WHERE cr.reviewlang = '.$currentlang.'
         AND
         ord.id_customer = '.$id_user.'
-
-
         ';
 
         $sql = Db::getInstance()->ExecuteS($sql);
@@ -731,6 +730,9 @@ class Customerreviews extends Module
             $this->_clearCache($this->templateFile);
         }
 
+        $comments = $this->getAllCommentsFromUser($customerid);
+        var_dump($comments);
+
         return $array;
     }
 
@@ -749,12 +751,23 @@ class Customerreviews extends Module
 
     public function hookActionDeleteGDPRCustomer($customer)
     {
-        $this->deleteAllCustomerComments($customer);
+        $this->deleteAllCustomerComments($customer['id']);
     }
 
     public function hookActionExportGDPRData($customer)
     {
-        $this->getAllCommentsFromUser($customer);
+        $comments = $this->getAllCommentsFromUser($customer['id']);
+        $customerData = array();
+        $customerFileds = array();
+
+        /* if ($comments != null) {
+             foreach ($comments as $key => $data) {
+                 $customerData[$key][$this->l('Comment')] = $data['comment'];
+                 $customerData[$key][$this->l('Stars')] = $data['stars'];
+                 $customerData[$key][$this->l('Product name')] = $data['product_name'];
+                 $customerData[$key][$this->l('Time added')] = $data['timeadded'];
+             }
+         } */
     }
 
     public function hookActionPaymentConfirmation($params)
