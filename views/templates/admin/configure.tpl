@@ -159,9 +159,7 @@
 			</table>
 		</div>
 		<div class='panel-footer'>
-			<div class='panel-footer'>
-				<button class='btn btn-default pull-right'><i class="process-icon-save"></i>{l s='Save' mod='customerreviews'}</button>
-			</div>
+			<button class='btn btn-default pull-right'><i class="process-icon-save"></i>{l s='Save' mod='customerreviews'}</button>
 		</div>
 	</form>
 </div>
