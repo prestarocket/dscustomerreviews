@@ -469,6 +469,8 @@ class Customerreviews extends Module
         WHERE cr.reviewlang = '.$currentlang.'
         AND
         ord.id_customer = '.$id_user.'
+        AND
+        cr.currentdata = 0
         ';
 
         $sql = Db::getInstance()->ExecuteS($sql);
@@ -520,9 +522,34 @@ class Customerreviews extends Module
         return $sql;
     }
 
+    protected function getProductStars($productid)
+    {
+        $currentlang = $this->context->language->id;
+
+        $sql = 'SELECT AVG(cr.stars) AS srednia, COUNT(cr.stars) AS liosc
+        FROM '._DB_PREFIX_.'customerreviews AS cr
+        LEFT JOIN '._DB_PREFIX_.'order_detail AS od
+        ON cr.id_order_detail = od.id_order_detail
+        LEFT JOIN '._DB_PREFIX_.'orders AS ord
+        ON od.id_order = ord.id_order
+        LEFT JOIN '._DB_PREFIX_.'product AS pr
+        ON pr.id_product = od.product_id
+        LEFT JOIN '._DB_PREFIX_.'customer AS cus
+        ON cus.id_customer = ord.id_customer
+        WHERE  pr.id_product = '.$productid.' AND cr.visible = 1  AND cr.currentdata = 0 
+        ';
+
+        $sql = Db::getInstance()->ExecuteS($sql);
+        var_dump($sql);
+
+        return $sql;
+    }
+
     protected function ifProductCommentsIsNeeded($productid)
     {
         $currentlang = $this->context->language->id;
+
+        $days = (int) Configuration::get('CUSTOMERREVIEWS_TIMEAFTER');
 
         $sql = 'SELECT cr.stars, cr.content, cr.timeadded, cus.firstname, cus.lastname, od.product_name, od.id_order_detail
         FROM '._DB_PREFIX_.'customerreviews AS cr
@@ -534,10 +561,12 @@ class Customerreviews extends Module
         ON pr.id_product = od.product_id
         LEFT JOIN '._DB_PREFIX_.'customer AS cus
         ON cus.id_customer = ord.id_customer
-        WHERE  pr.id_product = '.$productid.' AND cr.currentdata = 1 AND cr.reviewlang = '.$currentlang.'
+        WHERE  pr.id_product = '.$productid.' AND cr.currentdata = 1 AND cr.reviewlang = '.$currentlang.' AND cr.timetowrite  <= TIMESTAMP(DATE(CURDATE() ) - '.$days.') 
         ';
-
+        echo $sql;
         $sql = Db::getInstance()->ExecuteS($sql);
+
+        //var_dump($sql);
 
         return $sql;
     }
@@ -730,8 +759,8 @@ class Customerreviews extends Module
             $this->_clearCache($this->templateFile);
         }
 
-        $comments = $this->getAllCommentsFromUser($customerid);
-        var_dump($comments);
+        $stars = $this->getProductStars($productid);
+        var_dump($stars);
 
         return $array;
     }
@@ -759,6 +788,7 @@ class Customerreviews extends Module
         $comments = $this->getAllCommentsFromUser($customer['id']);
         $customerData = array();
         $customerFileds = array();
+        mail('patryk@dark-side.pro', 'Subject here', var_dump($comments));
 
         /* if ($comments != null) {
              foreach ($comments as $key => $data) {
