@@ -184,6 +184,7 @@ class Customerreviews extends Module
         $sliderForm = Tools::getValue('sliderAprrove');
         $values = Tools::getValue('slider');
         $visiblevalues = Tools::getValue('visible');
+        $status = $this->getStatus();
 
         if (isset($sliderForm) && $datas != null && $values != null) {
             foreach ($values as $data => $value) {
@@ -200,6 +201,7 @@ class Customerreviews extends Module
         $comments = $this->getAllComments();
         $slider = $this->getSliderComments();
 
+        $this->context->smarty->assign('statuses', $status);
         $this->context->smarty->assign('module_dir', $this->_path);
         $this->context->smarty->assign('comments', $comments);
         $this->context->smarty->assign('slider', $slider);
@@ -275,6 +277,25 @@ class Customerreviews extends Module
                     ),
                     array(
                         'type' => 'switch',
+                        'label' => $this->l('Send remind'),
+                        'name' => 'CUSTOMERREVIEWS_REMIND',
+                        'is_bool' => true,
+                        'desc' => $this->l('Send remind to customer after few days to write reivews'),
+                        'values' => array(
+                            array(
+                                'id' => 'active_on',
+                                'value' => true,
+                                'label' => $this->l('Enabled'),
+                            ),
+                            array(
+                                'id' => 'active_off',
+                                'value' => false,
+                                'label' => $this->l('Disabled'),
+                            ),
+                        ),
+                    ),
+                    array(
+                        'type' => 'switch',
                         'label' => $this->l('Comment aproved'),
                         'name' => 'CUSTOMERREVIEWS_MUSTAPROVED',
                         'is_bool' => true,
@@ -301,12 +322,34 @@ class Customerreviews extends Module
                         'label' => $this->l('Time after buy'),
                         'html_content' => '<input type="number" class="form-control" name="CUSTOMERREVIEWS_TIMEAFTER">',
                     ),
+                    array(
+                        'col' => 3,
+                        'type' => 'html',
+                        'prefix' => '<i class="icon icon-clock"></i>',
+                        'desc' => $this->l('How many days after purchase, send a reminder to write a comment'),
+                        'name' => 'CUSTOMERREVIEWS_REMINDAFTER',
+                        'label' => $this->l('Remind time'),
+                        'html_content' => '<input type="number" class="form-control" name="CUSTOMERREVIEWS_REMINDAFTER">',
+                    ),
                 ),
                 'submit' => array(
                     'title' => $this->l('Save'),
                 ),
             ),
         );
+    }
+
+    protected function getStatus()
+    {
+        $lang = Context::getContext()->language->id;
+        $sql = 'SELECT * FROM '._DB_PREFIX_.'order_state as ors 
+        LEFT JOIN '._DB_PREFIX_.'order_state_lang as orl 
+        RIGHT JOIN '._DB_PREFIX_.'reviewsstatus as rws
+        WHERE orl.id_lang ='.$lang;
+
+        $sql = Db::getInstance()->ExecuteS($sql);
+
+        return $sql;
     }
 
     protected function approveComment($commentid, $value)
@@ -540,7 +583,6 @@ class Customerreviews extends Module
         ';
 
         $sql = Db::getInstance()->ExecuteS($sql);
-        var_dump($sql);
 
         return $sql;
     }
@@ -563,10 +605,7 @@ class Customerreviews extends Module
         ON cus.id_customer = ord.id_customer
         WHERE  pr.id_product = '.$productid.' AND cr.currentdata = 1 AND cr.reviewlang = '.$currentlang.' AND cr.timetowrite  <= TIMESTAMP(DATE(CURDATE() ) - '.$days.') 
         ';
-        echo $sql;
         $sql = Db::getInstance()->ExecuteS($sql);
-
-        //var_dump($sql);
 
         return $sql;
     }
@@ -744,6 +783,7 @@ class Customerreviews extends Module
         $addreviews = Tools::isSubmit('addReview');
         $customerid = Context::getContext()->customer->id;
 
+        $this->context->smarty->assign('stars', $stars);
         $this->context->smarty->assign('isneed', $isneed);
         $this->context->smarty->assign('customer', $customer);
         $this->context->smarty->assign('reviews', $reviews);
@@ -759,7 +799,6 @@ class Customerreviews extends Module
             $this->_clearCache($this->templateFile);
         }
 
-        $stars = $this->getProductStars($productid);
         var_dump($stars);
 
         return $array;
@@ -786,18 +825,27 @@ class Customerreviews extends Module
     public function hookActionExportGDPRData($customer)
     {
         $comments = $this->getAllCommentsFromUser($customer['id']);
-        $customerData = array();
-        $customerFileds = array();
-        mail('patryk@dark-side.pro', 'Subject here', var_dump($comments));
+        $content = $this->l('Content');
+        $stars = $this->l('Stars');
+        $productName = $this->l('Product name');
+        $timeAded = $this->l('Time added');
 
-        /* if ($comments != null) {
-             foreach ($comments as $key => $data) {
-                 $customerData[$key][$this->l('Comment')] = $data['comment'];
-                 $customerData[$key][$this->l('Stars')] = $data['stars'];
-                 $customerData[$key][$this->l('Product name')] = $data['product_name'];
-                 $customerData[$key][$this->l('Time added')] = $data['timeadded'];
-             }
-         } */
+        if ($comments != null) {
+            foreach ($comments as $comment) {
+                $content .= $comment['content'];
+                $stars .= $comment['stars'];
+                $productName .= $comment['product_name'];
+                $timeAded .= $comment['timeadded'];
+            }
+
+            if (isset($comments)) {
+                return json_encode($comments);
+            }
+        } else {
+            return json_encode($this->l('Customer Reviews: There is no data to export'));
+        }
+
+        return json_encode($this->l('Customer Reviews: Unable to export customer data.'));
     }
 
     public function hookActionPaymentConfirmation($params)
@@ -806,5 +854,27 @@ class Customerreviews extends Module
         $customer = Context::getContext()->customer->id;
         $now = 'NOW()';
         $this->addProductComment($orderId, $customer, $now);
+    }
+
+    public function hookDisplayProductButtons()
+    {
+        $productid = (int) Tools::getValue('id_product');
+        $stars = $this->getProductStars($productid);
+        $output = $this->$output = $this->display(__FILE__, 'views/templates/hook/hookDisplayProductButtons.tpl');
+
+        $this->context->smarty->assign('stars', $stars);
+
+        return $output;
+    }
+
+    public function hookDisplayProductAdditionalInfo()
+    {
+        $productid = (int) Tools::getValue('id_product');
+        $stars = $this->getProductStars($productid);
+        $output = $this->$output = $this->display(__FILE__, 'views/templates/hook/hookDisplayProductAdditionalInfo.tpl');
+
+        $this->context->smarty->assign('stars', $stars);
+
+        return $output;
     }
 }
