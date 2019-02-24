@@ -95,6 +95,7 @@
 			<table class='table'>
 				<thead class='thead-default'>
 					<tr class="column-headers">
+						<th scope='col'></th>
 						<th scope="col">{l s='Position' mod='customerreviews'}</th>
 						<th scope="col">{l s='Customer name' mod='customerreviews'}</th>
 						<th scope="col">{l s='Stars' mod='customerreviews'}</th>
@@ -107,6 +108,11 @@
 						{if isset($slider) && $slider != null}
 							{foreach $slider as $item}
 								<tr id='{$item.id_customerreviews}'>
+									<td class='js-drag-handle'>
+										<div class='position-drag-handle' data-id='{$item.id_customerreviews}' data-position='{$item.sliderweight}' data-update-url='' data-update-method='POST'>
+											<i class="material-icons">drag_indicator</i>
+										</div>
+									</td>
 									<td>{$item.sliderweight}</td>
 									<td>{$item.firstname} {$item.lastname}</td>
 									<td>{$item.stars}</td>
@@ -125,7 +131,7 @@
 	</form>
 </div>
 
-<div class='pannel'>
+<div class='panel'>
 	<h3><i class="icon icon-tags"></i> {l s='Status included' mod='customerreviews'}</h3>
 	<small>{l s='Select which status allow to write review to customer' mod='customerreviews'}</small>
 	<form method=POST>
@@ -143,13 +149,13 @@
 					{foreach from=$statuses key=i item=$status}
 						<tr>
 							<th>{$i+1}</th>
-							<td>{$status}</td>
+							<td>{$status.lang}</td>
 							<td>
 								<span class="switch prestashop-switch fixed-width-md">
-									<input type="radio" name="status[{$status.id}]" id='status{$status.id}_on' value="1" {if $status.visible == 1}  checked="checked"{/if}>
-									<label for="status{$status.id}_on">Tak</label>
-									<input type="radio" name="status[{$status.id}]" id='status{$status.id}_off' value="0" {if $status.visible == 0}  checked="checked"{/if}>
-									<label for="status{$status.id}_off">Nie</label>
+									<input type="radio" name="status[{$status.id_order_state}]" id='status{$status.id_order_state}_on' value="1" {if $status.active == 1}  checked="checked"{/if}>
+									<label for="status{$status.id_order_state}_on">Tak</label>
+									<input type="radio" name="status[{$status.id_order_state}]" id='status{$status.id_order_state}_off' value="0" {if $status.active == 0}  checked="checked"{/if}>
+									<label for="status{$status.id_order_state}_off">Nie</label>
 									<a class="slide-button btn"></a>
 								</span>
 							</td>
