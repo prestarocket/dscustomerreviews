@@ -1,6 +1,6 @@
 <?php
 /**
-* 2007-2019 PrestaShop
+* 2007-2019 PrestaShop.
 *
 * NOTICE OF LICENSE
 *
@@ -25,7 +25,7 @@
 */
 $sql = array();
 
-$sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'customerreviews` (
+$sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'customerreviews` (
     `id_customerreviews` int(11) NOT NULL AUTO_INCREMENT,
     `id_order_detail` int(11) NOT NULL,
     `timetowrite` datetime NOT NULL,
@@ -41,11 +41,15 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `' . _DB_PREFIX_ . 'customerreviews` (
     `currentdata` int(1) NOT NULL,
     `reviewlang` int(10) NOT NULL,
     PRIMARY KEY  (`id_customerreviews`)
-) ENGINE=' . _MYSQL_ENGINE_ . ' DEFAULT CHARSET=utf8;';
+) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
+
+$sql[] .= 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'customerreviews` (
+    "id_order_state" int(11) NOT NULL,
+    "active" int(11) NOT NULL
+    ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
 
 foreach ($sql as $query) {
     if (Db::getInstance()->execute($query) == false) {
         return false;
     }
 }
-//dupa
