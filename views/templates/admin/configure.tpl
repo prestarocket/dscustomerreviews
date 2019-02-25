@@ -147,7 +147,7 @@
 					</thead>
 					<tbody>
 						{foreach from=$statuses key=i item=$status}
-						<input type='hidden' name='statusid[{$status.id_status}]' value='status[{$status.id_status}]'>
+						<input type="hidden" name="statusid[{$status.id_status}]"            value="{$status.id_status}">
 							<tr>
 								<th>{$i+1}</th>
 								<td>{$status.status_name}</td>
