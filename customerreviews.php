@@ -375,6 +375,22 @@ class Customerreviews extends Module
         */
     }
 
+
+    protected function updateStatus($data, $value)
+    {
+        $valueint = (int) $value;
+        $dataint = (int) $data;
+
+        $sql = 'UPDATE '._DB_PREFIX_.'customerreviews_status
+        SET 
+        `active` = '.$valueint.'
+        WHERE 
+        `id_status` = '.$dataint;
+
+        $sql = Db::getInstance()->execute($sql);
+    }
+
+
     protected function approveComment($commentid, $value)
     {
         $valueint = (int) $value;
@@ -643,15 +659,33 @@ class Customerreviews extends Module
         $time = 'NOW()';
         $id_order_detailint = (int) $id_order_detail;
 
-        $sql = 'UPDATE '._DB_PREFIX_.'customerreviews
-        SET 
-        `timeadded` = '.$time.',
-        `stars` = '.$starsint.',
-        `title` = "'.$title.'",
-        `content` = "'.$content.'",
-        `currentdata` = 0
-        WHERE 
-        `id_order_detail` = '.$id_order_detailint;
+        $mustBeAprooved= Configuration::get('CUSTOMERREVIEWS_MUSTAPROVED'); 
+
+        if($mustBeAprooved == 1)
+        {
+            $sql = 'UPDATE '._DB_PREFIX_.'customerreviews
+            SET 
+            `timeadded` = '.$time.',
+            `stars` = '.$starsint.',
+            `title` = "'.$title.'",
+            `content` = "'.$content.'",
+            `currentdata` = 0
+            WHERE 
+            `id_order_detail` = '.$id_order_detailint;
+        } 
+        else 
+        {
+            $sql = 'UPDATE '._DB_PREFIX_.'customerreviews
+            SET 
+            `timeadded` = '.$time.',
+            `stars` = '.$starsint.',
+            `title` = "'.$title.'",
+            `content` = "'.$content.'",
+            `visible` = 1,
+            `currentdata` = 0
+            WHERE 
+            `id_order_detail` = '.$id_order_detailint;
+        }
 
         $sql = Db::getInstance()->Execute($sql);
 
