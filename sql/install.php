@@ -50,6 +50,26 @@ $sql[2] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'customerreviews_status` (
     PRIMARY KEY  (`id_customerreviews_status`)
 )   ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
 
+$sql[3] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'customerreviews_users` (
+    `id_customerreviews_users` int(11) NOT NULL AUTO_INCREMENT,
+    `id_customer` int(11) NOT NULL,
+    `if_name` tinyint(1) NOT NULL,
+    `custom_name` varchar(64) NULL,
+    PRIMARY KEY  (`id_customerreviews_users`)
+)   ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
+
+$sql[4] = 'INSERT INTO '._DB_PREFIX_.'customerreviews_users 
+(
+    `id_customer`,
+    `if_name`
+)
+SELECT
+    id_customer,
+    1
+    FROM
+    '._DB_PREFIX_.'customer
+';
+
 foreach ($sql as $query) {
     if (Db::getInstance()->execute($query) == false) {
         return false;

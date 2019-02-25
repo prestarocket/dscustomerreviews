@@ -349,6 +349,77 @@ class Customerreviews extends Module
         );
     }
 
+
+    /*
+EXISTS `'._DB_PREFIX_.'customerreviews_users` (
+    `id_customerreviews_users` int(11) NOT NULL AUTO_INCREMENT,
+    `id_customer` int(11) NOT NULL,
+    `if_name` tinyint(1) NOT NULL,
+    `custom_name` varchar(64) NULL,
+    */
+
+
+    protected function insertCustomerName($id_customer)
+    {
+        $sql = 'INSERT INTO '._DB_PREFIX_.'customerreviews_users 
+        (
+            `id_customer`,
+            `if_name`
+        )
+        VALUES
+        (
+            '.$id_customer.',
+            1
+        )
+        ';
+        $sql = Db::getInstance()->ExecuteS($sql);
+
+        return $sql;
+
+    }
+
+    protected function getIfCustomerWantName($id_customer)
+    {
+        $sql = 'SELECT id_status FROM '._DB_PREFIX_.'customerreviews_users
+        WHERE `id_customer` = '.$id_customer;
+        $sql = Db::getInstance()->ExecuteS($sql);
+
+        return $sql;
+
+    }
+
+    protected function setIfCustomerWantName($id_customer, $value)
+    {
+        $value = (int) $value;
+        $id_customer = (int) $id_customer;
+
+        $sql = 'UPDATE '._DB_PREFIX_.'customerreviews_users
+        SET 
+        `if_name` = '.$value.'
+        WHERE 
+        `id_customer` = '.$id_customer;
+        $sql = Db::getInstance()->execute($sql);
+    }
+
+    protected function getCustomerCustomName($id_customer)
+    {
+        $sql = 'SELECT custom_name FROM '._DB_PREFIX_.'customerreviews_users
+        WHERE `id_customer` = '.$id_customer;
+        $sql = Db::getInstance()->ExecuteS($sql);
+        return $sql;
+    }
+
+    protected function setCustomerCustomName($id_customer, $customname)
+    {
+        $id_customer = (int) $id_customer;
+        $sql = 'UPDATE '._DB_PREFIX_.'customerreviews_users
+        SET 
+        `custom_name` = "'.$customname.'"
+        WHERE 
+        `id_customer` = '.$id_customer;
+        $sql = Db::getInstance()->execute($sql);
+    }
+
     protected function getStatus()
     {
         $lang = Context::getContext()->language->id;
@@ -359,21 +430,7 @@ class Customerreviews extends Module
         ON osl.id_order_state = crs.id_status     
         WHERE osl.id_lang ='.$lang;
         $sql = Db::getInstance()->ExecuteS($sql);
-
         return $sql;
-
-        /*
-         Pełne teksty 	id_order_state
-        $lang = Context::getContext()->language->id;
-        $sql = 'SELECT * FROM '._DB_PREFIX_.'order_state as ors
-        LEFT JOIN '._DB_PREFIX_.'order_state_lang as orl
-        RIGHT JOIN '._DB_PREFIX_.'reviewsstatus as rws
-        WHERE orl.id_lang ='.$lang;
-
-        $sql = Db::getInstance()->ExecuteS($sql);
-
-        return $sql;
-        */
     }
 
     protected function getActiveStatus()
@@ -381,7 +438,6 @@ class Customerreviews extends Module
         $sql = 'SELECT id_status FROM '._DB_PREFIX_.'customerreviews_status
         WHERE active = 1';
         $sql = Db::getInstance()->ExecuteS($sql);
-
         return $sql;
     }
 
@@ -389,7 +445,6 @@ class Customerreviews extends Module
     {
         $valueint = (int) $value;
         $dataint = (int) $data;
-
         $sql[1] = 'DELETE FROM '._DB_PREFIX_.'customerreviews_status WHERE `id_status` = '.$dataint;
 
         $sql[2] = 'INSERT INTO '._DB_PREFIX_.'customerreviews_status 
@@ -496,7 +551,7 @@ class Customerreviews extends Module
     protected function getAllComments()
     {
         $sql = '
-        SELECT  cr.id_customerreviews, cus.firstname, cus.lastname, cr.stars, cr.content, pr.id_product, od.product_name, cr.timeadded, cr.visible, cr.visibleweight, cr.slider, cr.reviewlang
+        SELECT  cr.id_customerreviews, cus.firstname, cus.lastname, cr.stars, cr.content, pr.id_product, od.product_name, cr.timeadded, cr.visible, cr.visibleweight, cr.slider, cr.reviewlang, cru.customname
         FROM '._DB_PREFIX_.'customerreviews AS cr
         LEFT JOIN '._DB_PREFIX_.'order_detail AS od
         ON cr.id_order_detail = od.id_order_detail
@@ -506,6 +561,8 @@ class Customerreviews extends Module
         ON pr.id_product = od.product_id
         LEFT JOIN '._DB_PREFIX_.'customer AS cus
         ON cus.id_customer = ord.id_customer
+        LEFT JOIN '._DB_PREFIX_.'customerreviews_users AS cru
+        ON cru.id_customer = ord.id_customer
         WHERE cr.deleted = 0 AND cr.currentdata = 0 
         ';
 
@@ -538,7 +595,7 @@ class Customerreviews extends Module
 
     protected function getAllSlider()
     {
-        $sql = 'SELECT cus.firstname, cus.lastname, cr.stars, cr.content, pr.id_product, od.product_name, cr.timeadded, cr.visible, cr.visibleweight, cr.slider, cr.reviewlang
+        $sql = 'SELECT cus.firstname, cus.lastname, cr.stars, cr.content, pr.id_product, od.product_name, cr.timeadded, cr.visible, cr.visibleweight, cr.slider, cr.reviewlang, cru.customname
         FROM '._DB_PREFIX_.'customerreviews AS cr
         LEFT JOIN '._DB_PREFIX_.'order_detail AS od
         ON cr.id_order_detail = od.id_order_detail
@@ -548,6 +605,8 @@ class Customerreviews extends Module
         ON pr.id_product = od.product_id
         LEFT JOIN '._DB_PREFIX_.'customer AS cus
         ON cus.id_customer = ord.id_customer
+        LEFT JOIN '._DB_PREFIX_.'customerreviews_users AS cru
+        ON cru.id_customer = ord.id_customer
         WHERE cr.deleted = 0 AND cr.currentdata = 0 
         ';
 
@@ -560,7 +619,8 @@ class Customerreviews extends Module
     {
         $currentlang = $this->context->language->id;
 
-        $sql = 'SELECT cr.stars, cr.timeadded, cr.content, od.product_name FROM '._DB_PREFIX_.'customerreviews AS cr
+        $sql = 'SELECT cr.stars, cr.timeadded, cr.content, od.product_name 
+        FROM '._DB_PREFIX_.'customerreviews AS cr
         LEFT JOIN '._DB_PREFIX_.'order_detail AS od
         ON cr.id_order_detail = od.id_order_detail
         LEFT JOIN '._DB_PREFIX_.'orders AS ord
@@ -585,8 +645,8 @@ class Customerreviews extends Module
     {
         $currentlang = $this->context->language->id;
 
-        $sql = 'SELECT cr.stars, cr.content, cr.timeadded, cus.firstname, cus.lastname, pr.id_product, od.product_name, cr.sliderweight, cr.id_customerreviews
-         FROM '._DB_PREFIX_.'customerreviews AS cr
+        $sql = 'SELECT cr.stars, cr.content, cr.timeadded, cus.firstname, cus.lastname, pr.id_product, od.product_name, cr.sliderweight, cr.id_customerreviews, cru.customname
+        FROM '._DB_PREFIX_.'customerreviews AS cr
         LEFT JOIN '._DB_PREFIX_.'order_detail AS od
         ON cr.id_order_detail = od.id_order_detail
         LEFT JOIN '._DB_PREFIX_.'orders AS ord
@@ -595,6 +655,8 @@ class Customerreviews extends Module
         ON pr.id_product = od.product_id
         LEFT JOIN '._DB_PREFIX_.'customer AS cus
         ON cus.id_customer = ord.id_customer
+        LEFT JOIN '._DB_PREFIX_.'customerreviews_users AS cru
+        ON cru.id_customer = ord.id_customer
         WHERE cr.slider = 1 AND cr.reviewlang = '.$currentlang.'  AND cr.currentdata = 0 
         ORDER BY cr.sliderweight
         ';
@@ -607,7 +669,7 @@ class Customerreviews extends Module
     {
         $currentlang = $this->context->language->id;
 
-        $sql = 'SELECT cr.stars, cr.content, cr.timeadded, cus.firstname, cus.lastname, od.product_name
+        $sql = 'SELECT cr.stars, cr.content, cr.timeadded, cus.firstname, cus.lastname, od.product_name, cru.customname
         FROM '._DB_PREFIX_.'customerreviews AS cr
         LEFT JOIN '._DB_PREFIX_.'order_detail AS od
         ON cr.id_order_detail = od.id_order_detail
@@ -617,6 +679,8 @@ class Customerreviews extends Module
         ON pr.id_product = od.product_id
         LEFT JOIN '._DB_PREFIX_.'customer AS cus
         ON cus.id_customer = ord.id_customer
+        LEFT JOIN '._DB_PREFIX_.'customerreviews_users AS cru
+        ON cru.id_customer = ord.id_customer
         WHERE  pr.id_product = '.$productid.' AND cr.visible = 1 AND cr.reviewlang = '.$currentlang.'  AND cr.currentdata = 0 
         ';
 
@@ -653,7 +717,7 @@ class Customerreviews extends Module
 
         $days = (int) Configuration::get('CUSTOMERREVIEWS_TIMEAFTER');
 
-        $sql = 'SELECT cr.stars, cr.content, cr.timeadded, cus.firstname, cus.lastname, od.product_name, od.id_order_detail
+        $sql = 'SELECT cr.stars, cr.content, cr.timeadded, cus.firstname, cus.lastname, od.product_name, od.id_order_detail, cru.customname
         FROM '._DB_PREFIX_.'customerreviews AS cr
         LEFT JOIN '._DB_PREFIX_.'order_detail AS od
         ON cr.id_order_detail = od.id_order_detail
@@ -663,6 +727,8 @@ class Customerreviews extends Module
         ON pr.id_product = od.product_id
         LEFT JOIN '._DB_PREFIX_.'customer AS cus
         ON cus.id_customer = ord.id_customer
+        LEFT JOIN '._DB_PREFIX_.'customerreviews_users AS cru
+        ON cru.id_customer = ord.id_customer
         WHERE  pr.id_product = '.$productid.' AND cr.currentdata = 1 AND cr.reviewlang = '.$currentlang.' AND cr.timetowrite  <= TIMESTAMP(DATE(CURDATE() ) - '.$days.') 
         ';
         $sql = Db::getInstance()->ExecuteS($sql);
@@ -801,6 +867,16 @@ class Customerreviews extends Module
 
     protected function getCustomerId($orderId)
     {
+        $orderId = (int) $orderId;
+
+        $sql = 'SELECT  ord.id_customer
+        FROM '._DB_PREFIX_.'orders AS ord
+        WHERE  ord.id_order = '.$orderId.'
+        ';
+
+        $sql = Db::getInstance()->ExecuteS($sql);
+
+        return $sql;
     }
 
     /**
