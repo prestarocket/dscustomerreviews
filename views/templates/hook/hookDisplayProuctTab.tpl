@@ -30,7 +30,6 @@
 {/block}
 
 {if isset($isneed[0])}
-    {$isneed[0]["id_order_detail"]|var_dump}
     {if $customer == true}
         <div id='add_review'>
             <form method=POST>

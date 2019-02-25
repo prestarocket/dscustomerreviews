@@ -134,13 +134,14 @@ class Customerreviews extends Module
      */
     public function install()
     {
+        include dirname(__FILE__).'/sql/install.php';
+
         Configuration::updateValue('CUSTOMERREVIEWS_HOMESLIDER', false);
         Configuration::updateValue('CUSTOMERREVIEWS_TIMEAFTER', 3);
         Configuration::updateValue('CUSTOMERREVIEWS_MUSTAPROVED', true);
+        Configuration::upadteValue('CUSTOMERREVIEWS_REMIND', false);
 
         $this->createTab();
-
-        include dirname(__FILE__).'/sql/install.php';
 
         return parent::install() &&
             $this->registerHook('header') &&
@@ -157,13 +158,13 @@ class Customerreviews extends Module
 
     public function uninstall()
     {
+        include dirname(__FILE__).'/sql/uninstall.php';
+
         Configuration::deleteByName('CUSTOMERREVIEWS_HOMESLIDER');
         Configuration::deleteByName('CUSTOMERREVIEWS_TIMEAFTER');
         Configuration::deleteByName('CUSTOMERREVIEWS_MUSTAPROVED');
 
         $this->tabRem();
-
-        include dirname(__FILE__).'/sql/uninstall.php';
 
         return parent::uninstall();
     }
@@ -284,7 +285,7 @@ class Customerreviews extends Module
                             ),
                         ),
                     ),
-                    /*array(
+                    array(
                         'type' => 'switch',
                         'label' => $this->l('Send remind'),
                         'name' => 'CUSTOMERREVIEWS_REMIND',
@@ -302,7 +303,7 @@ class Customerreviews extends Module
                                 'label' => $this->l('Disabled'),
                             ),
                         ),
-                    ),*/
+                    ),
                     array(
                         'type' => 'switch',
                         'label' => $this->l('Comment aproved'),
@@ -375,6 +376,14 @@ class Customerreviews extends Module
         */
     }
 
+    protected function getActiveStatus()
+    {
+        $sql = 'SELECT id_status FROM '._DB_PREFIX_.'customerreviews_status
+        WHERE active = 1';
+        $sql = Db::getInstance()->ExecuteS($sql);
+
+        return $sql;
+    }
 
     protected function updateStatus($data, $value)
     {
@@ -401,9 +410,7 @@ class Customerreviews extends Module
                 return false;
             }
         }
-
     }
-
 
     protected function approveComment($commentid, $value)
     {
@@ -673,10 +680,9 @@ class Customerreviews extends Module
         $time = 'NOW()';
         $id_order_detailint = (int) $id_order_detail;
 
-        $mustBeAprooved= Configuration::get('CUSTOMERREVIEWS_MUSTAPROVED'); 
+        $mustBeAprooved = Configuration::get('CUSTOMERREVIEWS_MUSTAPROVED');
 
-        if($mustBeAprooved == 1)
-        {
+        if ($mustBeAprooved == 1) {
             $sql = 'UPDATE '._DB_PREFIX_.'customerreviews
             SET 
             `timeadded` = '.$time.',
@@ -686,9 +692,7 @@ class Customerreviews extends Module
             `currentdata` = 0
             WHERE 
             `id_order_detail` = '.$id_order_detailint;
-        } 
-        else 
-        {
+        } else {
             $sql = 'UPDATE '._DB_PREFIX_.'customerreviews
             SET 
             `timeadded` = '.$time.',
@@ -793,6 +797,10 @@ class Customerreviews extends Module
         $sql = Db::getInstance()->execute($sql);
 
         return $sql;
+    }
+
+    protected function getCustomerId($orderId)
+    {
     }
 
     /**
@@ -947,5 +955,20 @@ class Customerreviews extends Module
         $this->context->smarty->assign('stars', $stars);
 
         return $output;
+    }
+
+    public function hookActionOrderStatusPostUpdate($params)
+    {
+        $statusid = $params['newOrderStatus']->id;
+        $activeStatus = $this->getActiveStatus();
+        $orderId = $params['id_order'];
+        $customerId = $this->getCustomerId($orderId);
+        $now = 'NOW()';
+
+        foreach ($activeStatus as $status) {
+            if ($status == $activeStatus) {
+                $this->addProductComment($orderId, $customerId, $now);
+            }
+        }
     }
 }
