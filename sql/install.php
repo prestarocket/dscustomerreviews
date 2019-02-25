@@ -25,7 +25,7 @@
 */
 $sql = array();
 
-$sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'customerreviews` (
+$sql[1] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'customerreviews` (
     `id_customerreviews` int(11) NOT NULL AUTO_INCREMENT,
     `id_order_detail` int(11) NOT NULL,
     `timetowrite` datetime NOT NULL,
@@ -43,13 +43,25 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'customerreviews` (
     PRIMARY KEY  (`id_customerreviews`)
 ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
 
-$sql[] .= 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'customerreviews` (
-    "id_order_state" int(11) NOT NULL,
-    "active" int(11) NOT NULL
-    ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
+$sql[2] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'customerreviews_status` (
+    `id_customerreviews_status` int(11) NOT NULL AUTO_INCREMENT,
+    `id_status` int(11) NOT NULL,
+    `active` tinyint(1) NOT NULL,
+    PRIMARY KEY  (`id_customerreviews_status`)
+)   ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
 
 foreach ($sql as $query) {
     if (Db::getInstance()->execute($query) == false) {
         return false;
     }
 }
+
+/*
+'\"id_customerreviews_status\" 
+int(11) NOT NULL AUTO_INCREMENT,\n \"active\" tinyin\' 
+at line 2CREATE TABLE IF NOT EXISTS 
+ps_customerreviews_status (\n \"id_customerreviews_status\" 
+int(11) NOT NULL AUTO_INCREMENT,\n \"active\" tinyint(1) 
+NOT NULL,\n PRIMARY KEY (id_customerreviews_status)\n) 
+ENGINE=InnoDB DEFAULT CHARSET=utf8;
+*/
