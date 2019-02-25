@@ -184,10 +184,9 @@ class Customerreviews extends Module
         $sliderForm = Tools::getValue('sliderAprrove');
         $values = Tools::getValue('slider');
         $visiblevalues = Tools::getValue('visible');
-        $status = $this->getStatus();
         $statusForm = Tools::getValue('includedStatuses');
         $statusData = Tools::getValue('status');
-        $statusId = Tools::getValue('statusid');
+        //$statusId = Tools::getValue('statusid');
 
         if (isset($sliderForm) && $datas != null && $values != null) {
             foreach ($values as $data => $value) {
@@ -201,12 +200,13 @@ class Customerreviews extends Module
             }
         }
 
-        if (isset($statusForm) && $statusData != null && $statusId != null) {
+        if (isset($statusForm) && $statusData != null) {
             foreach ($statusData as $data => $value) {
                 $this->updateStatus($data, $value);
             }
         }
 
+        $status = $this->getStatus();
         $comments = $this->getAllComments();
         $slider = $this->getSliderComments();
 
@@ -284,7 +284,7 @@ class Customerreviews extends Module
                             ),
                         ),
                     ),
-                    array(
+                    /*array(
                         'type' => 'switch',
                         'label' => $this->l('Send remind'),
                         'name' => 'CUSTOMERREVIEWS_REMIND',
@@ -302,7 +302,7 @@ class Customerreviews extends Module
                                 'label' => $this->l('Disabled'),
                             ),
                         ),
-                    ),
+                    ),*/
                     array(
                         'type' => 'switch',
                         'label' => $this->l('Comment aproved'),
@@ -331,7 +331,7 @@ class Customerreviews extends Module
                         'label' => $this->l('Time after buy'),
                         'html_content' => '<input type="number" class="form-control" name="CUSTOMERREVIEWS_TIMEAFTER">',
                     ),
-                    array(
+                    /*array(
                         'col' => 3,
                         'type' => 'html',
                         'prefix' => '<i class="icon icon-clock"></i>',
@@ -339,7 +339,7 @@ class Customerreviews extends Module
                         'name' => 'CUSTOMERREVIEWS_REMINDAFTER',
                         'label' => $this->l('Remind time'),
                         'html_content' => '<input type="number" class="form-control" name="CUSTOMERREVIEWS_REMINDAFTER">',
-                    ),
+                    ),*/
                 ),
                 'submit' => array(
                     'title' => $this->l('Save'),
@@ -381,13 +381,27 @@ class Customerreviews extends Module
         $valueint = (int) $value;
         $dataint = (int) $data;
 
-        $sql = 'UPDATE '._DB_PREFIX_.'customerreviews_status
-        SET 
-        `active` = '.$valueint.'
-        WHERE 
-        `id_status` = '.$dataint;
+        $sql[1] = 'DELETE FROM '._DB_PREFIX_.'customerreviews_status WHERE `id_status` = '.$dataint;
 
-        $sql = Db::getInstance()->execute($sql);
+        $sql[2] = 'INSERT INTO '._DB_PREFIX_.'customerreviews_status 
+        (
+            `id_status`,
+            `active`
+        )
+        VALUES
+        (
+            '.$dataint.',
+            '.$valueint.'
+        )
+
+        ';
+
+        foreach ($sql as $query) {
+            if (Db::getInstance()->execute($query) == false) {
+                return false;
+            }
+        }
+
     }
 
 
