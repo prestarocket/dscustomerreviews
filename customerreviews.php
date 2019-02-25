@@ -185,6 +185,9 @@ class Customerreviews extends Module
         $values = Tools::getValue('slider');
         $visiblevalues = Tools::getValue('visible');
         $status = $this->getStatus();
+        $statusForm = Tools::getValue('includedStatuses');
+        $statusData = Tools::getValue('status');
+        $statusId = Tools::getValue('statusid');
 
         if (isset($sliderForm) && $datas != null && $values != null) {
             foreach ($values as $data => $value) {
@@ -195,6 +198,12 @@ class Customerreviews extends Module
         if (isset($sliderForm) && $datas != null && $visiblevalues != null) {
             foreach ($visiblevalues as $data => $value) {
                 $this->approveComment($data, $value);
+            }
+        }
+
+        if (isset($statusForm) && $statusData != null && $statusId != null) {
+            foreach ($statusData as $data => $value) {
+                $this->updateStatus($data, $value);
             }
         }
 
@@ -352,12 +361,11 @@ class Customerreviews extends Module
 
         return $sql;
 
-
         /*
          Pełne teksty 	id_order_state
         $lang = Context::getContext()->language->id;
-        $sql = 'SELECT * FROM '._DB_PREFIX_.'order_state as ors 
-        LEFT JOIN '._DB_PREFIX_.'order_state_lang as orl 
+        $sql = 'SELECT * FROM '._DB_PREFIX_.'order_state as ors
+        LEFT JOIN '._DB_PREFIX_.'order_state_lang as orl
         RIGHT JOIN '._DB_PREFIX_.'reviewsstatus as rws
         WHERE orl.id_lang ='.$lang;
 
