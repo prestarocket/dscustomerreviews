@@ -137,25 +137,25 @@
 	<form method=POST>
 		<input type='hidden' name='includedStatuses'>
 		<div class='form-wrapper'>
-			<table>
-				<thead>
-					<tr>
+			<table class='table'>
+				<thead class='thead-default'>
+					<tr class="column-headers">
 						<th>#</th>
 						<th>{l s='Status name' mod='customerreviews'}</th>
-						<th>{l s='Action' mod='customerreviews'}
+						<th>{l s='Active' mod='customerreviews'}
 					</tr>
 				</thead>
 				<tbody>
 					{foreach from=$statuses key=i item=$status}
 						<tr>
 							<th>{$i+1}</th>
-							<td>{$status.lang}</td>
+							<td>{$status.status_name}</td>
 							<td>
 								<span class="switch prestashop-switch fixed-width-md">
-									<input type="radio" name="status[{$status.id_order_state}]" id='status{$status.id_order_state}_on' value="1" {if $status.active == 1}  checked="checked"{/if}>
-									<label for="status{$status.id_order_state}_on">Tak</label>
-									<input type="radio" name="status[{$status.id_order_state}]" id='status{$status.id_order_state}_off' value="0" {if $status.active == 0}  checked="checked"{/if}>
-									<label for="status{$status.id_order_state}_off">Nie</label>
+									<input type="radio" name="status[{$status.id_status}]" id='status{$status.id_status}_on' value="1" {if $status.active == 1}  checked="checked"{/if}>
+									<label for="status{$status.id_status}_on">Tak</label>
+									<input type="radio" name="status[{$status.id_status}]" id='status{$status.id_status}_off' value="0" {if $status.active == 0 || $status.active == null}  checked="checked"{/if}>
+									<label for="status{$status.id_status}_off">Nie</label>
 									<a class="slide-button btn"></a>
 								</span>
 							</td>
