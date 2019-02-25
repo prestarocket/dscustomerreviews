@@ -86,7 +86,7 @@
         {foreach $reviews as $review}
             <li>
                 {$review.date}
-                {$review.firstname} 
+                {$review.firstname} {$reviews.lastname} 
                 {$review.stars}
                 {$review.content}
             </li>
