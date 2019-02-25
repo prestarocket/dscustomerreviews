@@ -342,6 +342,20 @@ class Customerreviews extends Module
     protected function getStatus()
     {
         $lang = Context::getContext()->language->id;
+        $sql = '
+        SELECT osl.id_order_state AS id_status, osl.name AS status_name, crs.active AS active 
+        FROM '._DB_PREFIX_.'order_state_lang AS osl
+        LEFT JOIN '._DB_PREFIX_.'customerreviews_status AS crs
+        ON osl.id_order_state = crs.id_status     
+        WHERE osl.id_lang ='.$lang;
+        $sql = Db::getInstance()->ExecuteS($sql);
+
+        return $sql;
+
+
+        /*
+         Pełne teksty 	id_order_state
+        $lang = Context::getContext()->language->id;
         $sql = 'SELECT * FROM '._DB_PREFIX_.'order_state as ors 
         LEFT JOIN '._DB_PREFIX_.'order_state_lang as orl 
         RIGHT JOIN '._DB_PREFIX_.'reviewsstatus as rws
@@ -350,6 +364,7 @@ class Customerreviews extends Module
         $sql = Db::getInstance()->ExecuteS($sql);
 
         return $sql;
+        */
     }
 
     protected function approveComment($commentid, $value)
