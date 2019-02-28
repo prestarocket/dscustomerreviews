@@ -139,7 +139,7 @@ class Customerreviews extends Module
         Configuration::updateValue('CUSTOMERREVIEWS_HOMESLIDER', false);
         Configuration::updateValue('CUSTOMERREVIEWS_TIMEAFTER', 3);
         Configuration::updateValue('CUSTOMERREVIEWS_MUSTAPROVED', true);
-        Configuration::upadteValue('CUSTOMERREVIEWS_REMIND', false);
+        Configuration::upadteValue('CUSTOMERREVIEWS_REMIND', null);
 
         $this->createTab();
 
@@ -152,8 +152,7 @@ class Customerreviews extends Module
             $this->registerHook('actionDeleteGDPRCustomer') &&
             $this->registerHook('actionExportGDPRData') &&
             $this->registerHook('actionOrderStatusPostUpdate') &&
-            $this->registerHook('actionPaymentConfirmation') &&
-            $this->registerHook('ActionObjectOrderAddAfter');
+            $this->registerHook('actionPaymentConfirmation');
     }
 
     public function uninstall()
@@ -163,6 +162,7 @@ class Customerreviews extends Module
         Configuration::deleteByName('CUSTOMERREVIEWS_HOMESLIDER');
         Configuration::deleteByName('CUSTOMERREVIEWS_TIMEAFTER');
         Configuration::deleteByName('CUSTOMERREVIEWS_MUSTAPROVED');
+        Configuration::upadteValdeleteByNameue('CUSTOMERREVIEWS_REMIND');
 
         $this->tabRem();
 
@@ -332,7 +332,7 @@ class Customerreviews extends Module
                         'label' => $this->l('Time after buy'),
                         'html_content' => '<input type="number" class="form-control" name="CUSTOMERREVIEWS_TIMEAFTER">',
                     ),
-                    /*array(
+                    array(
                         'col' => 3,
                         'type' => 'html',
                         'prefix' => '<i class="icon icon-clock"></i>',
@@ -340,7 +340,7 @@ class Customerreviews extends Module
                         'name' => 'CUSTOMERREVIEWS_REMINDAFTER',
                         'label' => $this->l('Remind time'),
                         'html_content' => '<input type="number" class="form-control" name="CUSTOMERREVIEWS_REMINDAFTER">',
-                    ),*/
+                    ),
                 ),
                 'submit' => array(
                     'title' => $this->l('Save'),
@@ -349,7 +349,6 @@ class Customerreviews extends Module
         );
     }
 
-
     /*
 EXISTS `'._DB_PREFIX_.'customerreviews_users` (
     `id_customerreviews_users` int(11) NOT NULL AUTO_INCREMENT,
@@ -357,7 +356,6 @@ EXISTS `'._DB_PREFIX_.'customerreviews_users` (
     `if_name` tinyint(1) NOT NULL,
     `custom_name` varchar(64) NULL,
     */
-
 
     protected function insertCustomerName($id_customer)
     {
@@ -375,7 +373,6 @@ EXISTS `'._DB_PREFIX_.'customerreviews_users` (
         $sql = Db::getInstance()->ExecuteS($sql);
 
         return $sql;
-
     }
 
     protected function getIfCustomerWantName($id_customer)
@@ -385,7 +382,6 @@ EXISTS `'._DB_PREFIX_.'customerreviews_users` (
         $sql = Db::getInstance()->ExecuteS($sql);
 
         return $sql;
-
     }
 
     protected function setIfCustomerWantName($id_customer, $value)
@@ -406,6 +402,7 @@ EXISTS `'._DB_PREFIX_.'customerreviews_users` (
         $sql = 'SELECT custom_name FROM '._DB_PREFIX_.'customerreviews_users
         WHERE `id_customer` = '.$id_customer;
         $sql = Db::getInstance()->ExecuteS($sql);
+
         return $sql;
     }
 
@@ -430,6 +427,7 @@ EXISTS `'._DB_PREFIX_.'customerreviews_users` (
         ON osl.id_order_state = crs.id_status     
         WHERE osl.id_lang ='.$lang;
         $sql = Db::getInstance()->ExecuteS($sql);
+
         return $sql;
     }
 
@@ -438,6 +436,7 @@ EXISTS `'._DB_PREFIX_.'customerreviews_users` (
         $sql = 'SELECT id_status FROM '._DB_PREFIX_.'customerreviews_status
         WHERE active = 1';
         $sql = Db::getInstance()->ExecuteS($sql);
+
         return $sql;
     }
 
@@ -1026,7 +1025,7 @@ EXISTS `'._DB_PREFIX_.'customerreviews_users` (
     {
         $productid = (int) Tools::getValue('id_product');
         $stars = $this->getProductStars($productid);
-        $output = $this->$output = $this->display(__FILE__, 'views/templates/hook/hookDisplayProductAdditionalInfo.tpl');
+        $output = $this->display(__FILE__, 'views/templates/hook/hookDisplayProductAdditionalInfo.tpl');
 
         $this->context->smarty->assign('stars', $stars);
 
@@ -1046,5 +1045,10 @@ EXISTS `'._DB_PREFIX_.'customerreviews_users` (
                 $this->addProductComment($orderId, $customerId, $now);
             }
         }
+    }
+
+    public function hookDisplayCustomerAccount()
+    {
+        $output = $this->display(__FILE__, 'views/templates/hook/hookDisplayCustomerAccount.tpl');
     }
 }
