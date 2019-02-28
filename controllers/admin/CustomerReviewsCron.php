@@ -41,4 +41,3 @@ if (!defined('_PS_ADMIN_DIR_')) {
         die('unauthorized');
     }
 }
-dupa

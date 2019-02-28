@@ -22,13 +22,6 @@
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
 *}
-
-{block name='product_additional_info'}
-    {foreach $stars as $star}
-        {l s='Avarage score:' mod='customerreviews'} {$star.srednia} {l s='from:' mod='customerreviews'} {$star.ilosc} {l s='reviews' mod='customerreviews'}
-    {/foreach}
-{/block}
-
 {if isset($isneed[0])}
     {if $customer == true}
         <div id='add_review'>

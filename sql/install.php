@@ -54,7 +54,7 @@ $sql[3] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'customerreviews_users` (
     `id_customerreviews_users` int(11) NOT NULL AUTO_INCREMENT,
     `id_customer` int(11) NOT NULL,
     `if_name` tinyint(1) NOT NULL,
-    `custom_name` varchar(64) NULL,
+    `customname` varchar(64) NULL,
     PRIMARY KEY  (`id_customerreviews_users`)
 )   ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
 
@@ -77,11 +77,11 @@ foreach ($sql as $query) {
 }
 
 /*
-'\"id_customerreviews_status\" 
-int(11) NOT NULL AUTO_INCREMENT,\n \"active\" tinyin\' 
-at line 2CREATE TABLE IF NOT EXISTS 
-ps_customerreviews_status (\n \"id_customerreviews_status\" 
-int(11) NOT NULL AUTO_INCREMENT,\n \"active\" tinyint(1) 
-NOT NULL,\n PRIMARY KEY (id_customerreviews_status)\n) 
+'\"id_customerreviews_status\"
+int(11) NOT NULL AUTO_INCREMENT,\n \"active\" tinyin\'
+at line 2CREATE TABLE IF NOT EXISTS
+ps_customerreviews_status (\n \"id_customerreviews_status\"
+int(11) NOT NULL AUTO_INCREMENT,\n \"active\" tinyint(1)
+NOT NULL,\n PRIMARY KEY (id_customerreviews_status)\n)
 ENGINE=InnoDB DEFAULT CHARSET=utf8;
 */

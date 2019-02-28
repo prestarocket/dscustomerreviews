@@ -139,7 +139,8 @@ class Customerreviews extends Module
         Configuration::updateValue('CUSTOMERREVIEWS_HOMESLIDER', false);
         Configuration::updateValue('CUSTOMERREVIEWS_TIMEAFTER', 3);
         Configuration::updateValue('CUSTOMERREVIEWS_MUSTAPROVED', true);
-        Configuration::updateValue('CUSTOMERREVIEWS_REMIND', null);
+        Configuration::updateValue('CUSTOMERREVIEWS_REMINDMAIL', true);
+        Configuration::updateValue('CUSTOMERREVIEWS_REMINDAFTER', 3);
 
         $this->createTab();
 
@@ -162,7 +163,8 @@ class Customerreviews extends Module
         Configuration::deleteByName('CUSTOMERREVIEWS_HOMESLIDER');
         Configuration::deleteByName('CUSTOMERREVIEWS_TIMEAFTER');
         Configuration::deleteByName('CUSTOMERREVIEWS_MUSTAPROVED');
-        Configuration::upadteValdeleteByNameue('CUSTOMERREVIEWS_REMIND');
+        Configuration::deleteByName('CUSTOMERREVIEWS_REMINDMAIL');
+        Configuration::deleteByName('CUSTOMERREVIEWS_REMINDAFTER');
 
         $this->tabRem();
 
@@ -259,6 +261,9 @@ class Customerreviews extends Module
      */
     protected function getConfigForm()
     {
+        $timeafter = Configuration::get('CUSTOMERREVIEWS_TIMEAFTER');
+        $mailafter = Configuration::get('CUSTOMERREVIEWS_REMINDAFTER');
+
         return array(
             'form' => array(
                 'legend' => array(
@@ -288,7 +293,7 @@ class Customerreviews extends Module
                     array(
                         'type' => 'switch',
                         'label' => $this->l('Send remind'),
-                        'name' => 'CUSTOMERREVIEWS_REMIND',
+                        'name' => 'CUSTOMERREVIEWS_REMINDMAIL',
                         'is_bool' => true,
                         'desc' => $this->l('Send remind to customer after few days to write reivews'),
                         'values' => array(
@@ -330,7 +335,7 @@ class Customerreviews extends Module
                         'desc' => $this->l('How long after (in days) the purchase can the customer add a comment?'),
                         'name' => 'CUSTOMERREVIEWS_TIMEAFTER',
                         'label' => $this->l('Time after buy'),
-                        'html_content' => '<input type="number" class="form-control" name="CUSTOMERREVIEWS_TIMEAFTER">',
+                        'html_content' => '<input type="number" class="form-control" name="CUSTOMERREVIEWS_TIMEAFTER" value='.$timeafter.' min="0">',
                     ),
                     array(
                         'col' => 3,
@@ -339,7 +344,7 @@ class Customerreviews extends Module
                         'desc' => $this->l('How many days after purchase, send a reminder to write a comment'),
                         'name' => 'CUSTOMERREVIEWS_REMINDAFTER',
                         'label' => $this->l('Remind time'),
-                        'html_content' => '<input type="number" class="form-control" name="CUSTOMERREVIEWS_REMINDAFTER">',
+                        'html_content' => '<input type="number" class="form-control" name="CUSTOMERREVIEWS_REMINDAFTER" value='.$mailafter.' min="0">',
                     ),
                 ),
                 'submit' => array(
@@ -885,8 +890,10 @@ EXISTS `'._DB_PREFIX_.'customerreviews_users` (
     {
         return array(
             'CUSTOMERREVIEWS_HOMESLIDER' => Configuration::get('CUSTOMERREVIEWS_HOMESLIDER', false),
-            'CUSTOMERREVIEWS_TIMEAFTER' => Configuration::get('CUSTOMERREVIEWS_TIMEAFTER', null),
+            'CUSTOMERREVIEWS_TIMEAFTER' => Configuration::get('CUSTOMERREVIEWS_TIMEAFTER', 3),
             'CUSTOMERREVIEWS_MUSTAPROVED' => Configuration::get('CUSTOMERREVIEWS_MUSTAPROVED', false),
+            'CUSTOMERREVIEWS_REMINDMAIL' => Configuration::get('CUSTOMERREVIEWS_REMINDMAIL', false),
+            'CUSTOMERREVIEWS_REMINDAFTER' => Configuration::get('CUSTOMERREVIEWS_REMINDAFTER', 3),
         );
     }
 
@@ -936,6 +943,7 @@ EXISTS `'._DB_PREFIX_.'customerreviews_users` (
         $isneed = $this->ifProductCommentsIsNeeded($productid);
         $addreviews = Tools::isSubmit('addReview');
         $customerid = Context::getContext()->customer->id;
+        $stars = $this->getProductStars($productid);
 
         $this->context->smarty->assign('stars', $stars);
         $this->context->smarty->assign('isneed', $isneed);
@@ -952,8 +960,6 @@ EXISTS `'._DB_PREFIX_.'customerreviews_users` (
             $this->insertProductComment($id_order_detail, $customerid);
             $this->_clearCache($this->templateFile);
         }
-
-        var_dump($stars);
 
         return $array;
     }
