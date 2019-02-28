@@ -404,7 +404,7 @@ EXISTS `'._DB_PREFIX_.'customerreviews_users` (
 
     protected function getCustomerCustomName($id_customer) //sztuczne imię klienta
     {
-        $sql = 'SELECT custom_name FROM '._DB_PREFIX_.'customerreviews_users
+        $sql = 'SELECT customname FROM '._DB_PREFIX_.'customerreviews_users
         WHERE `id_customer` = '.$id_customer;
         $sql = Db::getInstance()->ExecuteS($sql);
 
@@ -416,7 +416,7 @@ EXISTS `'._DB_PREFIX_.'customerreviews_users` (
         $id_customer = (int) $id_customer;
         $sql = 'UPDATE '._DB_PREFIX_.'customerreviews_users
         SET 
-        `custom_name` = "'.$customname.'"
+        `customname` = "'.$customname.'"
         WHERE 
         `id_customer` = '.$id_customer;
         $sql = Db::getInstance()->execute($sql);

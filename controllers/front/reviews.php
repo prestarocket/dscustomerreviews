@@ -32,7 +32,7 @@ class CustomerReviewsReviewsModuleFrontController extends ModuleFrontController
         }
 
         $customer_id = (int) Context::getContext()->customer->id;
-        $customerCustomName = $this->getCustomerName($customer_id);
+        $customerCustomName = $this->getCustomerCustomName($customer_id);
         $ifCustomName = $this->getIfCustomerWantName($customer_id);
         $comments = getAllCommentsFromUser($customer_id);
         $output = $this->setTemplate('module:'.$this->module_name.'views/templates/front/reviews.tpl');
@@ -69,7 +69,7 @@ class CustomerReviewsReviewsModuleFrontController extends ModuleFrontController
 
     protected function getCustomerCustomName($id_customer) //sztuczne imię klienta
     {
-        $sql = 'SELECT custom_name FROM '._DB_PREFIX_.'customerreviews_users
+        $sql = 'SELECT customname FROM '._DB_PREFIX_.'customerreviews_users
         WHERE `id_customer` = '.$id_customer;
         $sql = Db::getInstance()->ExecuteS($sql);
 
@@ -116,10 +116,10 @@ class CustomerReviewsReviewsModuleFrontController extends ModuleFrontController
     public function getBreadcrumbLinks()
     {
         $breadcrumb = parent::getBreadcrumbLinks();
-        $breadcrumb['links'][] = array('title' => $this->module->translations['my-account'],
+        $breadcrumb['links'][] = array('title' => $this->l('My account'),
             'url' => $this->context->link->getPageLink('my-account'),
         );
-        $breadcrumb['links'][] = array('title' => $this->module->translations['reviews'],
+        $breadcrumb['links'][] = array('title' => $this->l('reviews'),
             'url' => $this->context->link->getModuleLink($this->module->name, 'reviews', array(), true),
         );
 
