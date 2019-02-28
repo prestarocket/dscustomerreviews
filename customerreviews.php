@@ -10,18 +10,17 @@
 * http://opensource.org/licenses/afl-3.0.php
 * If you did not receive a copy of the license and are unable to
 * obtain it through the world-wide-web, please send an email
-* to license@prestashop.com so we can send you a copy immediately.
+* to license@dark-side.pro so we can send you a copy immediately.
 *
 * DISCLAIMER
 *
 * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
 * versions in the future. If you wish to customize PrestaShop for your
-* needs please refer to http://www.prestashop.com for more information.
+* needs please refer to http://www.dark-side.pro for more information.
 *
-*  @author    PrestaShop SA <contact@prestashop.com>
-*  @copyright 2007-2019 PrestaShop SA
+*  @author    Dark-Side.pro <contact@dark-side.pro>
+*  @copyright 2007-2019 Dark-Side.pro
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
 */
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -130,7 +129,7 @@ class Customerreviews extends Module
 
     /**
      * Don't forget to create update methods if needed:
-     * http://doc.prestashop.com/display/PS16/Enabling+the+Auto-Update.
+     * http://doc.dark-side.pro/display/PS16/Enabling+the+Auto-Update.
      */
     public function install()
     {
@@ -153,7 +152,8 @@ class Customerreviews extends Module
             $this->registerHook('actionDeleteGDPRCustomer') &&
             $this->registerHook('actionExportGDPRData') &&
             $this->registerHook('actionOrderStatusPostUpdate') &&
-            $this->registerHook('actionPaymentConfirmation');
+            $this->registerHook('actionPaymentConfirmation') &&
+            $this->registerHook('displayCustomerAccount');
     }
 
     public function uninstall()
@@ -380,7 +380,7 @@ EXISTS `'._DB_PREFIX_.'customerreviews_users` (
         return $sql;
     }
 
-    protected function getIfCustomerWantName($id_customer)
+    protected function getIfCustomerWantName($id_customer) //czy user chce mieć prawdziwe imię
     {
         $sql = 'SELECT id_status FROM '._DB_PREFIX_.'customerreviews_users
         WHERE `id_customer` = '.$id_customer;
@@ -389,7 +389,7 @@ EXISTS `'._DB_PREFIX_.'customerreviews_users` (
         return $sql;
     }
 
-    protected function setIfCustomerWantName($id_customer, $value)
+    protected function setIfCustomerWantName($id_customer, $value) //update tego wyżej
     {
         $value = (int) $value;
         $id_customer = (int) $id_customer;
@@ -402,7 +402,7 @@ EXISTS `'._DB_PREFIX_.'customerreviews_users` (
         $sql = Db::getInstance()->execute($sql);
     }
 
-    protected function getCustomerCustomName($id_customer)
+    protected function getCustomerCustomName($id_customer) //sztuczne imię klienta
     {
         $sql = 'SELECT custom_name FROM '._DB_PREFIX_.'customerreviews_users
         WHERE `id_customer` = '.$id_customer;
@@ -926,11 +926,13 @@ EXISTS `'._DB_PREFIX_.'customerreviews_users` (
     public function hookHeader()
     {
         if (Tools::getValue('controller') == 'index') {
-            $this->context->controller->addJS($this->_path.'/views/js/slider.js');
-            $this->context->controller->addCSS($this->_path.'/views/css/slider.css');
+            $this->context->controller->addJS($this->_path.'views/js/slider.js');
+            $this->context->controller->addCSS($this->_path.'views/css/slider.css');
         } elseif (Tools::getValue('controller') == 'product') {
-            $this->context->controller->addJS($this->_path.'/views/js/product.js');
-            $this->context->controller->addCSS($this->_path.'/views/css/product.css');
+            $this->context->controller->addJS($this->_path.'views/js/product.js');
+            $this->context->controller->addCSS($this->_path.'views/css/product.css');
+        } elseif (Tools::getValue('controller') == 'myaccount') {
+            $this->context->controller->addCSS($this->_path.('views/css/myaccount.css'));
         }
     }
 
@@ -1055,13 +1057,9 @@ EXISTS `'._DB_PREFIX_.'customerreviews_users` (
 
     public function hookDisplayCustomerAccount()
     {
-        $customerid = Context::getContext()->customer->id;
-        $data = $this->getIfCustomerWantName($customerid);
-        $customerCustomName = $this->getCustomerCustomName($customerid);
-        $customerComments = $this->getAllCommentsFromUser($customerid);
+        $ps_17 = (Tools::version_compare(_PS_VERSION_, '1.7.0.0', '>=') == true) ? 1 : 0;
+        $this->context->smarty->assign('ps_17', (int) $ps_17);
         $output = $this->display(__FILE__, 'views/templates/hook/hookDisplayCustomerAccount.tpl');
-
-        $this->context->smarty->assign('customerreviews', array($data, $customerCustomName, $customerComments));
 
         return $output;
     }

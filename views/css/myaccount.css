@@ -1,6 +1,5 @@
-<?php
 /**
-* 2007-2019 PrestaShop.
+* 2007-2019 PrestaShop
 *
 * NOTICE OF LICENSE
 *
@@ -21,17 +20,14 @@
 *  @author    Dark-Side.pro <contact@dark-side.pro>
 *  @copyright 2007-2019 Dark-Side.pro
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+*  
+*
+* Don't forget to prefix your containers with your own identifier
+* to avoid any conflicts with others containers.
 */
-
-/**
- * In some cases you should not drop the tables.
- * Maybe the merchant will just try to reset the module
- * but does not want to loose all of the data associated to the module.
- */
-$sql = array();
-
-foreach ($sql as $query) {
-    if (Db::getInstance()->execute($query) == false) {
-        return false;
-    }
+i.icon-customerreviews {
+    background: url('../img/icon.png');
+    background-repeat: no-repeat;
+    background-size: 45px;
+    background-position: center;
 }
