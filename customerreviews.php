@@ -139,7 +139,7 @@ class Customerreviews extends Module
         Configuration::updateValue('CUSTOMERREVIEWS_HOMESLIDER', false);
         Configuration::updateValue('CUSTOMERREVIEWS_TIMEAFTER', 3);
         Configuration::updateValue('CUSTOMERREVIEWS_MUSTAPROVED', true);
-        Configuration::upadteValue('CUSTOMERREVIEWS_REMIND', null);
+        Configuration::updateValue('CUSTOMERREVIEWS_REMIND', null);
 
         $this->createTab();
 
@@ -1049,6 +1049,14 @@ EXISTS `'._DB_PREFIX_.'customerreviews_users` (
 
     public function hookDisplayCustomerAccount()
     {
+        $customerid = Context::getContext()->customer->id;
+        $data = $this->getIfCustomerWantName($customerid);
+        $customerCustomName = $this->getCustomerCustomName($customerid);
+        $customerComments = $this->getAllCommentsFromUser($customerid);
         $output = $this->display(__FILE__, 'views/templates/hook/hookDisplayCustomerAccount.tpl');
+
+        $this->context->smarty->assign('customerreviews', array($data, $customerCustomName, $customerComments));
+
+        return $output;
     }
 }
