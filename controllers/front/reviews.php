@@ -30,24 +30,21 @@ class CustomerReviewsReviewsModuleFrontController extends ModuleFrontController
         if (!Context::getContext()->customer->isLogged()) {
             Tools::redirect('index.php?controller=authentication&redirect=module&module='.$this->module->name.'&action=reviews');
         }
-
         $customer_id = (int) Context::getContext()->customer->id;
         $customerCustomName = $this->getCustomerCustomName($customer_id);
         $ifCustomName = $this->getIfCustomerWantName($customer_id);
-        $comments = getAllCommentsFromUser($customer_id);
-        $output = $this->setTemplate('module:'.$this->module_name.'views/templates/front/reviews.tpl');
+        $comments = $this->getAllCommentsFromUser($customer_id);
+        $output = $this->setTemplate('module:'.$this->module->name.'/views/templates/front/reviews.tpl');
 
-        $this->context->smarty->assign('customerreviews', array(
-            'customName' => $customer_name,
-            'ifCustomName' => $ifCustomName,
-            'comments' => $comments,
-        ));
+        $this->context->smarty->assign('comments', $comments);
+        $this->context->smarty->assign('ifCustomName', $ifCustomName);
+        $this->context->smarty->assign('customerCustomName');
         $this->context->smarty->assign('id_module', $this->module->id);
     }
 
     protected function getIfCustomerWantName($id_customer) //czy user chce mieć prawdziwe imię
     {
-        $sql = 'SELECT id_status FROM '._DB_PREFIX_.'customerreviews_users
+        $sql = 'SELECT if_name FROM '._DB_PREFIX_.'customerreviews_users
         WHERE `id_customer` = '.$id_customer;
         $sql = Db::getInstance()->ExecuteS($sql);
 

@@ -96,7 +96,6 @@
 				<table class='table'>
 					<thead class='thead-default'>
 						<tr class="column-headers">
-							<th scope='col'></th>
 							<th scope="col">{l s='Position' mod='customerreviews'}</th>
 							<th scope="col">{l s='Customer name' mod='customerreviews'}</th>
 							<th scope="col">{l s='Stars' mod='customerreviews'}</th>
@@ -107,12 +106,7 @@
 						<input type='hidden' name='sliderOrder'>					
 						{foreach $slider as $item}
 							<tr id='{$item.id_customerreviews}'>
-								<td class='js-drag-handle'>
-									<div class='position-drag-handle' data-id='{$item.id_customerreviews}' data-position='{$item.sliderweight}' data-update-url='' data-update-method='POST'>
-										<i class="material-icons">drag_indicator</i>
-									</div>
-								</td>
-								<td>{$item.sliderweight}</td>
+								<th>{$item.sliderweight}</th>
 								<td>{$item.firstname} {$item.lastname}</td>
 								<td>{$item.stars}</td>
 								<td>{$item.content}</td>					
@@ -133,6 +127,7 @@
 <div class='panel'>
 	<h3><i class="icon icon-tags"></i> {l s='Status included' mod='customerreviews'}</h3>
 	<small>{l s='Select which status allow to write review to customer' mod='customerreviews'}</small>
+	($statuses|var_dump)
 	{if isset($statuses) && $statuses != null}
 		<form method=POST>
 			<input type='hidden' name='includedStatuses'>
@@ -147,7 +142,7 @@
 					</thead>
 					<tbody>
 						{foreach from=$statuses key=i item=$status}
-						<input type="hidden" name="statusid[{$status.id_status}]"            value="{$status.id_status}">
+						<input type="hidden" name="statusid[{$status.id_status}]" value="{$status.id_status}">
 							<tr>
 								<th>{$i+1}</th>
 								<td>{$status.status_name}</td>

@@ -22,46 +22,63 @@
 *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  
 *}
-{capture name=path}{l s='My comments' mod='customerreviews'}{/capture}
-<div class='card card-block'>
-    <h3 class='page-subheading'>{l s='Comments settings' mod='customerreviews'}</h3>
-    <div class='col-lg-4'>
-        <form class='form'>
-            <input type='hidden' name='token' value=''>
-            <input type='hidden' name='customerReviewsSettings'>
-            <div class='form-group'>
-
-            </div>
-            <button type='submit' class='btn btn-primary'>{l s='Update settings' mod='customerreviews'}</button>
-        </form>
-    </div>
-
-    <div class='col-lg-8'>
-        <h4>{l s='Your comments' mod='customerreviews'}</h4>
-        {foreach $comments as $comment}
-            <div class='reviews'>
-                <div class='reviewGroup'>
-                    <div class='starsGroup'>
-                        {if $comment.stars == 5}
-
-                        {elseif $comment.stars == 4}
-
-                        {elseif $comment.stars == 3}
-
-                        {elseif $comment.stars == 2}
-
-                        {elseif $comment.stars == 1}
-
-                        {/if}
+{extends file='index.tpl'}
+{block name='content_wrapper'}
+    {block name='page_content'}
+        <div class='card card-block'>
+            <h3 class='page-subheading'>{l s='Comments settings' mod='customerreviews'}</h3>
+            <div class='col-lg-4'>
+                <form class='form'>
+                    <h4>{l s='Introduce yourself as' mod='customerreviews'}</h4>
+                    <input type='hidden' name='customerReviewsSettings'>
+                    <div class='form-group'>
+                        <label for='ifCustomName'>
+                            {l s='Show real name' mod='customerreviews'}
+                            <input type='radio' class='form-control' name='ifCustomName' value='1' {if $ifCustomName == 1}checked{/if}>
+                            {l s='Use nickname'}
+                            <input type='radio' class='form-control' name='ifCustomName' value='0' {if $ifCustomName == 0}checked{/if}>
+                        </label>
+                        <label for='customName'>
+                            {l s='Your nickname in comments' mod='customerreviews'}
+                            <input class='form-control' value='{$customerCustomName}' name='customerCustomName' placeholder='{if $customerCustomName != null}Your nickname{/if}'>
+                        </label>
                     </div>
-                    <div class='date'>
-                        {$comment.date}
-                    </div>
-                </div>
-                <div class='reviewContent'>
-                    {$comment.content}
-                </div>
+                    <button type='submit' class='btn btn-primary'>{l s='Update settings' mod='customerreviews'}</button>
+                </form>
             </div>
-        {/foreach}
-    </div>
-</div>
+
+            <div class='col-lg-8'>
+                {if isset($comments) && $comments != null}
+                    <h4>{l s='Your comments' mod='customerreviews'}</h4>
+                    {foreach $comments as $comment}
+                        <div class='reviews'>
+                            <div class='reviewGroup'>
+                                <div class='starsGroup'>
+                                    {if $comment.stars == 5}
+
+                                    {elseif $comment.stars == 4}
+
+                                    {elseif $comment.stars == 3}
+
+                                    {elseif $comment.stars == 2}
+
+                                    {elseif $comment.stars == 1}
+
+                                    {/if}
+                                </div>
+                                <div class='date'>
+                                    {$comment.date}
+                                </div>
+                            </div>
+                            <div class='reviewContent'>
+                                {$comment.content}
+                            </div>
+                        </div>
+                    {/foreach}
+                {else}
+                    {l s='No comments yet' mod='customerreviews'}
+                {/if}
+            </div>
+        </div>
+    {/block}
+{/block}
