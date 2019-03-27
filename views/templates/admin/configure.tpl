@@ -127,7 +127,7 @@
 <div class='panel'>
 	<h3><i class="icon icon-tags"></i> {l s='Status included' mod='customerreviews'}</h3>
 	<small>{l s='Select which status allow to write review to customer' mod='customerreviews'}</small>
-	($statuses|var_dump)
+	{$statuses|var_dump}
 	{if isset($statuses) && $statuses != null}
 		<form method=POST>
 			<input type='hidden' name='includedStatuses'>
