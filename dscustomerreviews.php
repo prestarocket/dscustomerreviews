@@ -26,13 +26,13 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-class Customerreviews extends Module
+class Dscustomerreviews extends Module
 {
     protected $config_form = false;
 
     public function __construct()
     {
-        $this->name = 'customerreviews';
+        $this->name = 'dscustomerreviews';
         $this->tab = 'administration';
         $this->version = '1.0.0';
         $this->author = 'Dark-Side.pro';
@@ -189,7 +189,6 @@ class Customerreviews extends Module
         $visiblevalues = Tools::getValue('visible');
         $statusForm = Tools::getValue('includedStatuses');
         $statusData = Tools::getValue('status');
-        //$statusId = Tools::getValue('statusid');
 
         if (isset($sliderForm) && $datas != null && $values != null) {
             foreach ($values as $data => $value) {
